@@ -1,0 +1,20 @@
+{
+  "rejected": [
+    {
+      "asset_id": "brand-guide",
+      "reason": "underpowered"
+    },
+    {
+      "asset_id": "refund-policy-v3",
+      "reason": "underpowered"
+    },
+    {
+      "asset_id": "ship-promise",
+      "reason": "underpowered"
+    }
+  ],
+  "run_id": "ue-select",
+  "selected": null,
+  "source_run_id": "ue-value",
+  "status": "RUN_STATUS_COMPLETED"
+}

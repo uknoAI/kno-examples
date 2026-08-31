@@ -1,0 +1,12 @@
+{
+  "agent": "fake:",
+  "dev_cases": 6,
+  "errored": 0,
+  "goal": "exact-match",
+  "holdout_cases": 3,
+  "run_id": "ue-baseline",
+  "score": 1,
+  "scored": 6,
+  "spent_usd": "$0.00",
+  "status": "completed"
+}

@@ -1,0 +1,9 @@
+{
+  "select": [
+    "Selected 0 — greedy on delta-per-cost, no approximation guarantee; keep/reject decisions used Bonferroni-corrected intervals",
+    "Rejected 3",
+    "brand-guide   underpowered",
+    "refund-policy-v3  underpowered",
+    "ship-promise  underpowered"
+  ]
+}
