@@ -45,10 +45,31 @@ func main() {
 	os.Exit(run(os.Args[1:]))
 }
 
+// usage is the whole surface. `verify` is what CI runs and what a contributor
+// runs before opening a PR, so `--help` has to answer "what can I run" without
+// sending anyone to read main.go.
+const usage = `usage: verify <command> [flags]
+
+  lint                    front matter, credentials, and quoted-block fidelity. Needs no binary.
+  flags     --kno PATH    every kno invocation against the released binary's own surface
+  scenario  --kno PATH    every scenario end to end against committed expectations
+  render    RECIPE        print one recipe's verification block
+  stamp     --kno PATH    write last-verified and verified-against (CI writes these, not you)
+
+exit codes: 0 clean, 1 findings, 2 the runner itself broke`
+
 func run(args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: verify <lint|flags|scenario|render|stamp> [flags]")
+		fmt.Fprintln(os.Stderr, usage)
 		return exitBroken
+	}
+	// Asking for help is a successful command, not a usage error: it prints to
+	// stdout and exits 0. Bare `verify` keeps stderr and exit 2, which is the
+	// code the nightly reads as "the runner broke, file nothing".
+	switch args[0] {
+	case "-h", "--help", "help":
+		fmt.Fprintln(os.Stdout, usage)
+		return exitClean
 	}
 	var err error
 	var findings []string
