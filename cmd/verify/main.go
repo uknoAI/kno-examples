@@ -269,7 +269,8 @@ func cmdFlags(args []string) ([]string, error) {
 
 func cmdScenario(args []string) ([]string, error) {
 	fs := flag.NewFlagSet("scenario", flag.ContinueOnError)
-	dir := fs.String("scenario", "scenarios/support-refunds", "scenario directory")
+	dir := fs.String("scenario", "", "one scenario directory; default is every scenario under --scenarios")
+	all := fs.String("scenarios", "scenarios", "directory of scenario directories")
 	knoPath := fs.String("kno", "kno", "path of the released kno binary")
 	repeat := fs.Int("repeat", 1, "run this many times and byte-compare the captured output")
 	update := fs.Bool("update", false, "rewrite expected/*.json from this run, preserving each projection's key set")
@@ -280,7 +281,51 @@ func cmdScenario(args []string) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("resolve --kno: %w", err)
 	}
-	s, err := scenario.Load(*dir)
+
+	// Default to every scenario rather than one named here. A second scenario
+	// that CI does not run is not a second scenario, and defaulting to all of
+	// them means adding one is a directory rather than a directory plus a
+	// remembered edit in two workflows and a Makefile.
+	dirs := []string{*dir}
+	if *dir == "" {
+		dirs, err = scenarioDirs(*all)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var findings []string
+	for _, d := range dirs {
+		more, err := checkScenario(d, abs, *repeat, *update)
+		if err != nil {
+			return nil, err
+		}
+		findings = append(findings, more...)
+	}
+	return findings, nil
+}
+
+// scenarioDirs lists every scenario directory, in a stable order.
+func scenarioDirs(root string) ([]string, error) {
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return nil, fmt.Errorf("read %s: %w", root, err)
+	}
+	var out []string
+	for _, e := range entries {
+		if e.IsDir() {
+			out = append(out, filepath.Join(root, e.Name()))
+		}
+	}
+	if len(out) == 0 {
+		return nil, fmt.Errorf("%s holds no scenario directories", root)
+	}
+	sort.Strings(out)
+	return out, nil
+}
+
+func checkScenario(dir, knoPath string, repeat int, update bool) ([]string, error) {
+	s, err := scenario.Load(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -291,14 +336,14 @@ func cmdScenario(args []string) ([]string, error) {
 	defer os.RemoveAll(parent)
 
 	var runs []*scenario.Artifacts
-	for i := 0; i < *repeat; i++ {
-		a, err := s.Run(abs, parent)
+	for i := 0; i < repeat; i++ {
+		a, err := s.Run(knoPath, parent)
 		if err != nil {
 			return nil, err
 		}
 		runs = append(runs, a)
 	}
-	if *update {
+	if update {
 		if err := s.Update(runs[0]); err != nil {
 			return nil, err
 		}

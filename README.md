@@ -74,10 +74,19 @@ field rather than remembered. A reader who pastes stage three into a fresh shell
 store, and a green tick over that failure is exactly the false confidence this repository exists
 to destroy.
 
-Today there is one scenario, [`support-refunds`](scenarios/support-refunds/README.md): twelve
-Cases across refunds, shipping, account, and billing, and three candidate Assets. All three are
-rejected. That is the interesting part — an empty Portfolio is the tool refusing to recommend
-something, which is the one screen an ordinary eval harness does not have.
+Today there are two, and they are a matched pair.
+[`support-refunds`](scenarios/support-refunds/README.md) has twelve Cases across refunds,
+shipping, account, and billing, and three candidate Assets. All three are rejected. That is the
+interesting part — an empty Portfolio is the tool refusing to recommend something, which is the
+one screen an ordinary eval harness does not have.
+
+[`underpowered-eval`](scenarios/underpowered-eval/README.md) is the same Cases with three
+removed, and it also rejects all three Assets — for a different reason. `support-refunds` says
+`no-effect`: an interval was formed and it contained zero. `underpowered-eval` says
+`underpowered`: too few Cases survived into the reserve for any interval to form, so there is
+nothing to report. One is a measurement; the other is the refusal to pretend there was one. They
+look alike on screen, they mean opposite things, and a reader who conflates them will read every
+`Rejected` as "measured and found wanting".
 
 Its six stages carry six recipes, one each: `ci-gate` and `first-baseline` on `baseline`, then
 `value-a-pool`, `select-a-portfolio`, `export-a-tuning-set`, `read-the-whole-story`, and
@@ -146,8 +155,21 @@ committing to it. In order:
       `processed`/`issued`, and `cmd/verify/testdata/fixtures/drift-processed` is that exact bug,
       kept as a test.
 
-- [ ] **More scenarios.** A coding-agent scenario and an eval-platform scenario, so the vendor
+- [ ] **More scenarios.** [`underpowered-eval`](scenarios/underpowered-eval/README.md) is the
+      first of these: the same Cases as `support-refunds`, three fewer of them, ending in
+      `underpowered` rather than `no-effect` — a measurement refused, next to a measurement
+      made. Still wanted: a coding-agent scenario and an eval-platform scenario, so the vendor
       recipes have more than one shape to be "the same shape as".
+
+      **What a new scenario can and cannot show.** Nothing committed here can demonstrate an
+      Asset earning its place, and that is a property of the tool rather than of the scenarios.
+      `fake:` answers every Case with exactly what the Case expects, so injected context cannot
+      move its score; `exec:` declares `ContextInject: false` and the Value stage refuses exec
+      arms for injected measurement; and every adapter that does accept injected context spends
+      money, which the nightly may not. So an `executed` scenario always ends in an empty
+      Portfolio, and a non-empty one would have to be a `manual` page against a paid provider —
+      a different tier making a different promise. Design new scenarios around which *verdict*
+      they reach, not around whether an Asset wins.
 
 ## License
 
