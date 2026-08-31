@@ -102,6 +102,12 @@ jobs:
           report=$(mktemp)
           : > "$report"
           status=0
+          # BUILT, not `go run`. `go run` reports its own exit status and
+          # collapses every non-zero program exit to 1, so the exit-2 check
+          # below could never fire through it: a crashed runner was
+          # indistinguishable from a docs finding, and this job would have
+          # filed a drift issue built from a crash dump.
+          go build -o "$RUNNER_TEMP/verify" ./cmd/verify
           # Three passes, all findings collected. Stopping at the first would
           # turn a nightly into a one-finding-per-night drip.
           for step in \
@@ -110,7 +116,7 @@ jobs:
             "scenario --kno $(command -v kno) --repeat 2"
           do
             # shellcheck disable=SC2086
-            go run ./cmd/verify $step >> "$report" 2>&1 || {
+            "$RUNNER_TEMP/verify" $step >> "$report" 2>&1 || {
               rc=$?
               # Exit 2 is the runner itself breaking. An infrastructure failure
               # is not a docs finding: go red, file nothing. Mirrors
@@ -204,13 +210,17 @@ jobs:
           set -uo pipefail
           : > report.txt
           status=0
+          # Built rather than `go run`, so exit 2 survives — see the released
+          # job. This job files on the OTHER repository, so a crash mistaken
+          # for a finding would open an issue on uknoAI/kno from a crash dump.
+          go build -o "$RUNNER_TEMP/verify" ./cmd/verify
           for step in \
             "lint" \
             "flags --kno $(command -v kno)" \
             "scenario --kno $(command -v kno) --repeat 2"
           do
             # shellcheck disable=SC2086
-            go run ./cmd/verify $step >> report.txt 2>&1 || {
+            "$RUNNER_TEMP/verify" $step >> report.txt 2>&1 || {
               rc=$?
               if [ "$rc" -eq 2 ]; then
                 echo "::error::verify $step exited 2 (the runner broke). No issue filed."

@@ -221,3 +221,20 @@ func copyTree(src, dst string) error {
 		return os.WriteFile(target, b, info.Mode().Perm())
 	})
 }
+
+// TestHelpIsASuccessfulCommand pins the distinction the nightly depends on:
+// asking for help succeeds, while a malformed invocation returns the code that
+// means "the runner broke" rather than "the docs are wrong".
+func TestHelpIsASuccessfulCommand(t *testing.T) {
+	for _, arg := range []string{"-h", "--help", "help"} {
+		if code := run([]string{arg}); code != exitClean {
+			t.Errorf("verify %s = %d, want %d", arg, code, exitClean)
+		}
+	}
+	if code := run(nil); code != exitBroken {
+		t.Errorf("verify with no arguments = %d, want %d", code, exitBroken)
+	}
+	if code := run([]string{"bogus"}); code != exitBroken {
+		t.Errorf("verify bogus = %d, want %d", code, exitBroken)
+	}
+}
