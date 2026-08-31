@@ -82,15 +82,40 @@ jobs:
     name: gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: "8.28.0"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # History as well as tree: a key committed and then "removed" in a
+          # later commit is still a published key.
           fetch-depth: 0
+
+      # The pinned, checksum-verified binary rather than gitleaks-action.
+      # Two reasons, and the first one is not a preference: gitleaks-action
+      # refuses to run on an organization repository without a paid
+      # GITLEAKS_LICENSE secret, which it reports as a red job — a security
+      # gate whose failure mode is "unlicensed" is a gate that gets deleted.
+      # The second is that this is exactly what uknoAI/kno's own secrets-scan
+      # does, pinned to one version so both repositories run the same rule set.
+      - name: Install gitleaks (pinned, checksum-verified)
+        run: |
+          set -euo pipefail
+          asset="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          sums="gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          curl -sSfL -o "$asset" "$base/$asset"
+          curl -sSfL -o "$sums"  "$base/$sums"
+          grep " $asset\$" "$sums" | sha256sum -c -
+          sudo tar -xzf "$asset" -C /usr/local/bin gitleaks
+          gitleaks version
+
       # A scenario repository full of `export VENDOR_API_KEY=` lines is the
       # single most likely place in the organization for a real key to be
-      # pasted. Tree AND history: a key removed in a later commit is still a
-      # published key, and is treated as compromised per SECURITY.md.
-      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
-        env:
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
-          GITLEAKS_ENABLE_SUMMARY: "true"
+      # pasted. --redact so a finding does not reprint the secret into a public
+      # CI log, which would publish it a second time.
+      - name: Scan the working tree
+        run: gitleaks detect --no-git --config .gitleaks.toml --redact -v
+
+      - name: Scan the full history
+        run: gitleaks detect --config .gitleaks.toml --redact -v

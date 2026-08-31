@@ -6,8 +6,8 @@
     {
       "asset_id": "brand-guide",
       "delta_goal": 0,
-      "low": -0.39597252156206514,
-      "high": 0.39597252156206514,
+      "low": -0.3960,
+      "high": 0.3960,
       "delta_control": 0,
       "n_pairs": 5,
       "n_routed": 5,
@@ -16,8 +16,8 @@
     {
       "asset_id": "refund-policy-v3",
       "delta_goal": 0,
-      "low": -0.39597252156206514,
-      "high": 0.39597252156206514,
+      "low": -0.3960,
+      "high": 0.3960,
       "delta_control": 0,
       "n_pairs": 5,
       "n_routed": 5,
@@ -26,8 +26,8 @@
     {
       "asset_id": "ship-promise",
       "delta_goal": 0,
-      "low": -0.39597252156206514,
-      "high": 0.39597252156206514,
+      "low": -0.3960,
+      "high": 0.3960,
       "delta_control": 0,
       "n_pairs": 5,
       "n_routed": 5,

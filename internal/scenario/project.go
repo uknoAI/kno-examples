@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 // Subset asserts that every path present in `want` is present in `got` with
@@ -53,8 +55,11 @@ func subsetValue(want, got any, path string) []string {
 
 	case json.Number:
 		g, ok := got.(json.Number)
-		if !ok || g.String() != w.String() {
-			return []string{fmt.Sprintf("%s: expected %s, got %v", path, w.String(), got)}
+		if !ok {
+			return []string{fmt.Sprintf("%s: expected the number %s, got %s", path, w.String(), kind(got))}
+		}
+		if !numbersMatch(w, g) {
+			return []string{fmt.Sprintf("%s: expected %s, got %s", path, w.String(), g.String())}
 		}
 		return nil
 
@@ -70,6 +75,75 @@ func subsetValue(want, got any, path string) []string {
 		}
 		return nil
 	}
+}
+
+// numbersMatch compares a projected number against a real one AT THE PRECISION
+// THE PROJECTION DECLARES.
+//
+// An integer is exact: `"scored": 8` means eight. A number written with a
+// decimal point is compared after rounding both sides to that many fractional
+// digits, so `"low": -0.3960` asserts the interval bound to four places and no
+// further.
+//
+// This is not laziness, it is the assertion the recipe actually makes. Two
+// findings drove it, on the very first CI run of this repository:
+//
+//	FAIL support-refunds/value.valuations[0].low:
+//	  expected -0.39597252156206514, got -0.39597252156200174
+//
+// The scenario is bit-for-bit reproducible on one machine — two runs on
+// darwin/arm64 produce identical bytes, and so do two runs on linux/amd64 —
+// but the two platforms disagree from the 12th significant digit, which is a
+// floating-point difference in an iterative computation, not a docs finding
+// and not something a recipe ever claimed. Asserting all seventeen digits
+// would make every expectation a statement about the runner's libm, so the
+// scenario would be red on one architecture forever and the projection would
+// be regenerated per-platform, which is a golden file that has stopped being a
+// test.
+//
+// Four places is also exactly what the CLI renders (`+0.0000 [-0.3960,
+// +0.3960]`) and exactly what the recipe's prose quotes. The projection and
+// the quotation now claim the same thing.
+//
+// A widening in the OTHER direction still fails, which is the property that
+// matters: if a bound moves at the fourth decimal, the recipe's claim about
+// the interval became false and the page goes red.
+func numbersMatch(want, got json.Number) bool {
+	ws, gs := want.String(), got.String()
+	if ws == gs {
+		return true
+	}
+	dot := strings.IndexByte(ws, '.')
+	if dot < 0 {
+		// An integer projection is exact. `"scored": 8` is a count, and a
+		// count that moved is always a finding.
+		return false
+	}
+	digits := len(ws) - dot - 1
+	wf, err := want.Float64()
+	if err != nil {
+		return false
+	}
+	gf, err := got.Float64()
+	if err != nil {
+		return false
+	}
+	return strconv.FormatFloat(wf, 'f', digits, 64) == strconv.FormatFloat(gf, 'f', digits, 64)
+}
+
+// roundTo renders got at the precision want declares, so `make update-expected`
+// refreshes a value without widening its precision.
+func roundTo(want, got json.Number) json.Number {
+	ws := want.String()
+	dot := strings.IndexByte(ws, '.')
+	if dot < 0 {
+		return got
+	}
+	gf, err := got.Float64()
+	if err != nil {
+		return got
+	}
+	return json.Number(strconv.FormatFloat(gf, 'f', len(ws)-dot-1, 64))
 }
 
 // prune projects `got` down to the shape of `want`. It is what
@@ -119,6 +193,12 @@ func prune(want, got any) (any, error) {
 			out = append(out, p)
 		}
 		return out, nil
+	case json.Number:
+		g, ok := got.(json.Number)
+		if !ok {
+			return nil, fmt.Errorf("expected a number, got %s", kind(got))
+		}
+		return roundTo(w, g), nil
 	default:
 		return got, nil
 	}

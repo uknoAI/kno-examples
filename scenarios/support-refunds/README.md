@@ -85,6 +85,26 @@ plane, on an air-gapped box, and behind a corporate proxy, so it cannot fetch a 
 repository at runtime — and the cost of duplication is paid by a detector rather than by
 vigilance. See the roadmap in this repository's `README.md`.
 
+## A cross-platform float difference, worth reporting upstream
+
+The scenario is bit-for-bit reproducible on one machine: two runs on the same binary produce
+byte-identical output, and CI asserts that with `--repeat 2`. Across architectures it is not.
+`value`'s interval bounds agree to eleven significant digits and then diverge:
+
+```
+darwin/arm64   -0.39597252156206514
+linux/amd64    -0.39597252156200174
+```
+
+That is a floating-point difference in an iterative computation, not a docs finding — and it is
+the reason `expected/value.json` declares the bound to four decimal places, which is what the
+CLI renders (`[-0.3960, +0.3960]`) and what the recipe quotes. The projection asserts to the
+precision it declares and no further; a bound that moves at the fourth decimal still fails.
+
+Asserting all seventeen digits would make the expectation a statement about the runner's libm,
+so the scenario would be red on one architecture forever and the file would end up regenerated
+per-platform — a golden file that has stopped being a test.
+
 ## An observation worth reporting upstream
 
 `kno export --json` at v0.1.2 prints `"select_run_id": ""` even though `--select-run-id` was

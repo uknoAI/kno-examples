@@ -57,6 +57,11 @@ Rejected 3
 Portfolio recorded. `kno export` writes the selected assets to their destinations.
 ```
 
+*(The transcript is real output, captured on darwin/arm64. The trailing digits of that interval
+differ by a few units in the last place on other architectures — a floating-point difference in
+an iterative computation, not a change in the answer — which is why the committed assertion is
+on the value rounded to four places, the same precision `kno value` renders.)*
+
 **Selected 0 is a result, not a failure.** All three Assets were measured against a
 deterministic agent, so every delta is exactly zero and every corrected interval crosses zero.
 "Include nothing new" is a legal, first-class outcome, and the rejection log says why for each

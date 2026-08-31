@@ -47,15 +47,32 @@ func TestSubset(t *testing.T) {
 			findings: []string{"baseline.score: expected 1, got 0.75"},
 		},
 		{
-			name: "numbers compare as the literals the binary printed, not as float64",
+			name: "an identical literal matches",
 			want: `{"low": -0.39597252156206514}`,
 			got:  `{"low": -0.39597252156206514}`,
 		},
 		{
-			name:     "a float that lost precision fails",
-			want:     `{"low": -0.39597252156206514}`,
-			got:      `{"low": -0.3959725215620651}`,
-			findings: []string{"baseline.low: expected -0.39597252156206514, got -0.3959725215620651"},
+			// The projection asserts to the precision it DECLARES. This is the
+			// exact divergence the first CI run of this repository found:
+			// darwin/arm64 and linux/amd64 agree on an interval bound to
+			// eleven significant digits and then part company. Four places is
+			// what the CLI renders and what the recipe quotes, so four places
+			// is what the projection claims.
+			name: "a float matches at the precision the projection declares",
+			want: `{"low": -0.3960}`,
+			got:  `{"low": -0.39597252156200174}`,
+		},
+		{
+			name:     "a float that moved at the declared precision fails",
+			want:     `{"low": -0.3960}`,
+			got:      `{"low": -0.3971}`,
+			findings: []string{"baseline.low: expected -0.3960, got -0.3971"},
+		},
+		{
+			name:     "an integer projection is exact: a count that moved is always a finding",
+			want:     `{"scored": 8}`,
+			got:      `{"scored": 8.0001}`,
+			findings: []string{"baseline.scored: expected 8, got 8.0001"},
 		},
 		{
 			name: "nested objects and arrays are projected the same way",
