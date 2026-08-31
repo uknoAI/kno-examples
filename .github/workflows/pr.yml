@@ -34,11 +34,20 @@ jobs:
       - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
 
       - name: Install the latest released kno via install.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # Resolved with an authenticated call, then handed to install.sh:
+          # the anonymous /releases/latest endpoint is rate-limited per IP,
+          # shared across every runner in the region, and a 403 there is an
+          # infrastructure failure wearing a red X. Everything install.sh
+          # actually guarantees — the download, the checksum, the signature —
+          # still runs unchanged.
+          tag=$(gh release view --repo uknoAI/kno --json tagName -q .tagName)
           mkdir -p "$HOME/.local/bin"
           curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
-            | KNO_INSTALL_DIR="$HOME/.local/bin" sh 2>&1 | tee install.log
+            | KNO_VERSION="$tag" KNO_INSTALL_DIR="$HOME/.local/bin" sh 2>&1 | tee install.log
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           grep -q "Signature OK." install.log || {
             echo "::error::install.sh did not verify the cosign signature."

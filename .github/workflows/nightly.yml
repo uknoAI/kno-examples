@@ -66,11 +66,26 @@ jobs:
 
       - name: Install the latest released kno via install.sh
         id: install
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # The tag is resolved with an AUTHENTICATED call, then handed to
+          # install.sh as KNO_VERSION. install.sh's own resolution uses the
+          # anonymous /releases/latest endpoint, which is rate-limited per IP —
+          # shared across every runner in the region — and returns 403 often
+          # enough that a nightly built on it is a nightly that fails for
+          # reasons that are not a docs finding. The download, the checksum,
+          # and the signature all still go through install.sh unchanged, so
+          # this job still exercises the path users exercise.
+          if ! tag=$(gh release view --repo uknoAI/kno --json tagName -q .tagName); then
+            echo "::error::could not resolve the latest kno release. This is an infrastructure failure, not a docs finding — no issue filed."
+            exit 1
+          fi
+          echo "resolved $tag"
           mkdir -p "$HOME/.local/bin"
           curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
-            | KNO_INSTALL_DIR="$HOME/.local/bin" sh 2>&1 | tee install.log
+            | KNO_VERSION="$tag" KNO_INSTALL_DIR="$HOME/.local/bin" sh 2>&1 | tee install.log
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           # The whole reason cosign is installed above. If install.sh did not
           # print the line, verification did not happen and this job is
@@ -161,17 +176,27 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Cloned BEFORE setup-go, because the toolchain is chosen from kno's
+      # go.mod rather than ours. kno's floor moves independently of this
+      # repository's, and pinning to ours meant "go.mod requires go >= 1.25.8
+      # (running go 1.25.0)" — a red job that says nothing about the docs.
+      # Taking the higher of the two floors is what this job is for: it is
+      # supposed to track main.
+      - name: Clone uknoAI/kno@main
+        run: git clone --depth 1 --branch main https://github.com/uknoAI/kno.git "$RUNNER_TEMP/kno"
+
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version-file: go.mod
+          go-version-file: ${{ runner.temp }}/kno/go.mod
 
       - name: Build kno from main
         run: |
           set -euo pipefail
-          git clone --depth 1 --branch main https://github.com/uknoAI/kno.git "$RUNNER_TEMP/kno"
           mkdir -p "$HOME/.local/bin"
           (cd "$RUNNER_TEMP/kno" && go build -o "$HOME/.local/bin/kno" ./cmd/kno)
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          kno --version
 
       - name: Verify recipes and scenarios
         id: verify
@@ -244,11 +269,14 @@ jobs:
           go-version-file: go.mod
       - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
       - name: Install the latest released kno
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          tag=$(gh release view --repo uknoAI/kno --json tagName -q .tagName)
           mkdir -p "$HOME/.local/bin"
           curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
-            | KNO_INSTALL_DIR="$HOME/.local/bin" sh
+            | KNO_VERSION="$tag" KNO_INSTALL_DIR="$HOME/.local/bin" sh
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       # The date on a page is evidence of a run, never of a memory. Only CI
       # writes it, and it only writes it after `released` was green.
