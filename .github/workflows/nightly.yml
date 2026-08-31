@@ -263,6 +263,52 @@ jobs:
           echo "::warning::A merged change in uknoAI/kno will break a recipe at the next release."
           echo "::warning::Advisory: this job never blocks a kno release. Noticing and blocking are different jobs."
 
+  fixtures:
+    name: demo fixtures against the released kno
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # A separate job because it needs uknoAI/kno's SOURCE, not its binary. The
+    # `released` job installs through install.sh and so has no cli/demodata and
+    # no tapes/ to compare against.
+    #
+    # It clones the RELEASE TAG rather than main, because the question is
+    # whether the fixtures a user already has — embedded in the binary they
+    # installed, and typed in the tape on the page they are reading — still
+    # agree with the scenario this repository asserts against. Drift on main is
+    # tomorrow's problem; drift in a release is today's.
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Clone uknoAI/kno at the latest release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! tag=$(gh release view --repo uknoAI/kno --json tagName -q .tagName); then
+            echo "::error::could not resolve the latest kno release. Infrastructure, not a fixture finding."
+            exit 1
+          fi
+          echo "resolved $tag"
+          git clone --depth 1 --branch "$tag" https://github.com/uknoAI/kno.git "$RUNNER_TEMP/kno"
+      - name: Compare the three copies
+        run: |
+          set -uo pipefail
+          go build -o "$RUNNER_TEMP/verify" ./cmd/verify
+          "$RUNNER_TEMP/verify" fixtures --kno-src "$RUNNER_TEMP/kno" || rc=$?
+          if [ "${rc:-0}" -eq 2 ]; then
+            echo "::error::verify fixtures exited 2 (the runner broke, not the fixtures)."
+            exit 1
+          fi
+          if [ "${rc:-0}" -ne 0 ]; then
+            echo "::error::The demo fixtures have drifted. kno demo, the quickstart tape, and this scenario no longer agree."
+            echo "::error::This is the processed/issued bug. Fix the copy that is wrong, in whichever repository holds it."
+            exit 1
+          fi
+
   stamp:
     name: write last-verified
     needs: released
