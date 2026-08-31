@@ -5,6 +5,7 @@
   "goal": "exact-match",
   "dev_cases": 8,
   "holdout_cases": 4,
+  "attempted": 8,
   "scored": 8,
   "errored": 0,
   "score": 1,

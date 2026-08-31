@@ -142,7 +142,10 @@ func FlagCheck(r *Recipe, b *Binary) []Finding {
 			}
 		}
 	}
-	for _, s := range Schemes(r.Body) {
+	// Only `--agent` schemes: `doctor --json` enumerates agent adapters and
+	// nothing else, so asserting an Evals or Pool scheme against it would
+	// manufacture a finding about a working adapter. See AgentSchemes.
+	for _, s := range AgentSchemes(r.Body) {
 		if _, isNonAdapter := nonAdapterSchemes[s]; isNonAdapter {
 			continue
 		}

@@ -7,19 +7,27 @@
   ],
   "value": [
     "+0.0000  [-0.3960, +0.3960]",
-    "(underpowered)"
+    "(underpowered)",
+    "Planning 36 measurements over 3 assets against baseline sr-baseline.",
+    "Value run sr-value (RUN_STATUS_COMPLETED)"
   ],
   "select": [
-    "Selected 0 — greedy on delta-per-cost, no approximation guarantee; keep/reject decisions used Bonferroni-corrected intervals",
+    "Selected 0 \u2014 greedy on delta-per-cost, no approximation guarantee; keep/reject decisions used Bonferroni-corrected intervals",
     "Rejected 3",
     "crosses zero"
   ],
   "export": [
-    "wrote        tuning.jsonl (0 assets, 117 bytes)"
+    "wrote        tuning.jsonl (0 assets, 117 bytes)",
+    "Export run sr-export (completed)",
+    "destination  tuning_set",
+    "manifest     tuning.jsonl.manifest.md"
   ],
   "report": [
     "score **1.000**",
-    "no cluster data for this run"
+    "no cluster data for this run",
+    "Value run sr-value (completed)",
+    "Baseline sr-baseline (completed)",
+    "no-effect              | 3"
   ],
   "purge": [
     "Purged 8 recorded row(s) for run sr-baseline.",

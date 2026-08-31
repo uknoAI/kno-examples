@@ -24,6 +24,11 @@ func TestLintRefusesTheBrokenCorpus(t *testing.T) {
 		{"no-tier", "no-tier.md", "no `verification:` field"},
 		{"hand-edited", "hand-edited.md", "only an `executed` recipe may carry `last-verified`"},
 		{"unnamed-credential", "unnamed-credential.md", "OPENAI_API_KEY is required"},
+		// The tier says CI ran something; the page has nothing runnable on it.
+		// A rendered `executed` badge over a page CI never executed is
+		// indistinguishable from the real thing, which makes it the one
+		// failure a tier system cannot survive.
+		{"executed-runs-nothing", "executed-runs-nothing.md", "quotes no `kno-run` block"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.dir, func(t *testing.T) {

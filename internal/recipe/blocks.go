@@ -89,6 +89,7 @@ var (
 	knoLineRE = regexp.MustCompile(`(^|\s)kno\s+([a-z][a-z-]*)`)
 	flagRE    = regexp.MustCompile(`--[a-z][a-z0-9-]*`)
 	schemeRE  = regexp.MustCompile(`--(?:agent|evals|pool)[= ]+"?([a-z][a-z0-9_]*):`)
+	agentRE   = regexp.MustCompile(`--agent[= ]+"?([a-z][a-z0-9_]*):`)
 	exportRE  = regexp.MustCompile(`(?m)^\s*export\s+([A-Z][A-Z0-9_]*)=`)
 )
 
@@ -125,6 +126,25 @@ func Invocations(body string) []Invocation {
 func Schemes(body string) []string {
 	seen := map[string]bool{}
 	for _, m := range schemeRE.FindAllStringSubmatch(body, -1) {
+		seen[m[1]] = true
+	}
+	return sortedKeys(seen)
+}
+
+// AgentSchemes returns only the schemes named in an `--agent` value.
+//
+// It exists because `kno doctor --json` enumerates AGENT adapters and nothing
+// else: an Evals or Pool scheme (`langsmith:`, `langfuse:`, `braintrust:`,
+// `hf:`) is absent from that document however healthy the adapter is. Checking
+// every scheme against `doctor` would therefore report four working vendor
+// recipes as broken — a finding that is false, in the one place where a false
+// finding is most expensive, because a checker that cries wolf is a checker
+// people stop reading. Evals and Pool schemes are checked instead against the
+// scheme→credential table by Lint, which is what actually protects a reader
+// from a typo there.
+func AgentSchemes(body string) []string {
+	seen := map[string]bool{}
+	for _, m := range agentRE.FindAllStringSubmatch(body, -1) {
 		seen[m[1]] = true
 	}
 	return sortedKeys(seen)

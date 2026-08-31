@@ -76,6 +76,10 @@ Cases across refunds, shipping, account, and billing, and three candidate Assets
 rejected. That is the interesting part — an empty Portfolio is the tool refusing to recommend
 something, which is the one screen an ordinary eval harness does not have.
 
+Its six stages carry six recipes, one each: `ci-gate` and `first-baseline` on `baseline`, then
+`value-a-pool`, `select-a-portfolio`, `export-a-tuning-set`, `read-the-whole-story`, and
+`retention` on the five that follow.
+
 ## How verification stays honest
 
 - **Assertions are on `--json`, never on rendered text — and on a projection, not a full
@@ -110,24 +114,30 @@ CI.
 This repository was scaffolded with one scenario end-to-end, to prove the machinery before
 committing to it. In order:
 
-1. **Migrate the remaining cookbook entries.** Four of the twenty-five are here; the other
-   twenty-one still live in `uknoAI/kno/docs/cookbook/`. Each needs front matter, a tier, and —
-   for the vendor pages — every credential it requires named, including the `OPENAI_API_KEY` that
-   `--agent openai:...` implies and that today's pages never mention.
-2. **Tombstone the old paths in `uknoAI/kno`.** *(Not done in this pass, deliberately: nothing has
-   been deleted from `uknoAI/kno`.)* Each migrated recipe leaves a one-line stub at its old path
-   pointing here. Twenty-two branch-pinned links to
+1. **~~Migrate the remaining cookbook entries.~~ Done.** All twenty-five migrated entries are
+   here, each with front matter, a tier, and — for the vendor pages — every credential it
+   requires named, including the `OPENAI_API_KEY` that `--agent openai:...` implies and that the
+   old pages never mentioned. One page stayed behind: `check-your-evals` documents `kno eval
+   inspect`, which is on `uknoAI/kno@main` and in no release, so no honest tier can be claimed for
+   it against a binary that cannot run it. It migrates with the release that ships the command.
+2. **~~Tombstone the old paths in `uknoAI/kno`.~~ Done, in the companion PR.** Each migrated
+   recipe leaves a one-line stub at its old path pointing here. Twenty-two branch-pinned links to
    `github.com/uknoAI/kno/blob/main/docs/cookbook/*.md` live in `uknoAI/kno-www` alone, and
    neither repository's CI checks external links — `make docs` skips `https://` targets and the
    site's Playwright crawl skips external hrefs. Those links would rot silently. The stubs are
    what keep them alive, and they are load-bearing precisely because nothing else is watching.
-3. **The fixture-drift detector.** A nightly job that byte-compares
+   A lint in `uknoAI/kno` pins each stub to one line and one link, so a stub cannot quietly
+   regrow into a second copy of a page.
+3. **Re-point `uknoAI/kno-www`.** The twenty-two links resolve through the stubs today, which is
+   a redirect rather than a destination. A link to a stub is worse prose than a link to the real
+   page, so the site's references move here — a quality step, not a breakage fix.
+4. **The fixture-drift detector.** A nightly job that byte-compares
    `scenarios/support-refunds/evals/cases.jsonl` against the copy embedded in the Kno binary
    (`cli/demodata/`) and the copy typed in `tapes/quickstart.tape`. The duplication is
    deliberate — `kno demo` must work on a plane — and the cost of duplication is paid by a
    detector rather than by vigilance. This is the job that would have caught
    `processed`/`issued`.
-4. **More scenarios.** A coding-agent scenario and an eval-platform scenario, so the vendor
+5. **More scenarios.** A coding-agent scenario and an eval-platform scenario, so the vendor
    recipes have more than one shape to be "the same shape as".
 
 ## License
