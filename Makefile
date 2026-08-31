@@ -48,6 +48,14 @@ flags: require-kno ## Every kno invocation against the released binary's own sur
 scenarios: require-kno ## Every scenario end to end, twice, against committed expectations
 	go run ./cmd/verify scenario --kno $(KNO) --repeat 2
 
+.PHONY: fixtures
+fixtures: ## The three copies of the demo fixtures: make fixtures KNO_SRC=../kno
+	@if [ -z "$(KNO_SRC)" ]; then \
+		echo "fixtures needs a checkout of uknoAI/kno: make fixtures KNO_SRC=../kno"; \
+		exit 1; \
+	fi
+	go run ./cmd/verify fixtures --kno-src $(KNO_SRC)
+
 .PHONY: update-expected
 update-expected: require-kno ## Regenerate expected/*.json from a real run, preserving each projection's key set
 	go run ./cmd/verify scenario --kno $(KNO) --update

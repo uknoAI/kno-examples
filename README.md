@@ -32,7 +32,7 @@ in about a second, and every number it prints is asserted against a committed ex
 ```
 recipes/           task-shaped pages, each declaring how far it has been verified
 scenarios/         committed Cases, Pool, run.sh, and expected output
-cmd/verify         the runner: the lint, the flag check, the scenario executor
+cmd/verify         the runner: the lint, the flag check, the scenario executor, the fixture detector
 .github/workflows  PR checks, the nightly two-job drift detector, vendor-smoke
 VERIFICATION.md    exactly what each badge claims and does not claim
 ```
@@ -137,12 +137,14 @@ committing to it. In order:
       is a redirect rather than a destination. A link to a stub is worse prose than a link to the
       real page, so the site's references move here — a quality step, not a breakage fix.
 
-- [ ] **The fixture-drift detector.** A nightly job that byte-compares
-      `scenarios/support-refunds/evals/cases.jsonl` against the copy embedded in the Kno binary
-      (`cli/demodata/`) and the copy typed in `tapes/quickstart.tape`. The duplication is
-      deliberate — `kno demo` must work on a plane — and the cost of duplication is paid by a
-      detector rather than by vigilance. This is the job that would have caught
-      `processed`/`issued`.
+- [x] **The fixture-drift detector.** `verify fixtures` compares
+      `scenarios/support-refunds/evals/cases.jsonl` and `pool/pool.jsonl` against the copy
+      embedded in the Kno binary (`cli/demodata/`) and the copy typed in
+      `tapes/quickstart.tape`, and a nightly job runs it against the latest release tag. The
+      duplication is deliberate — `kno demo` must work on a plane — and the cost of duplication
+      is now paid by a detector rather than by vigilance. This is the job that would have caught
+      `processed`/`issued`, and `cmd/verify/testdata/fixtures/drift-processed` is that exact bug,
+      kept as a test.
 
 - [ ] **More scenarios.** A coding-agent scenario and an eval-platform scenario, so the vendor
       recipes have more than one shape to be "the same shape as".

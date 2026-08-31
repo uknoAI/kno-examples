@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"flag"
 	"fmt"
@@ -30,6 +31,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/uknoAI/kno-examples/internal/fixture"
 	"github.com/uknoAI/kno-examples/internal/recipe"
 	"github.com/uknoAI/kno-examples/internal/render"
 	"github.com/uknoAI/kno-examples/internal/scenario"
@@ -54,6 +56,7 @@ const usage = `usage: verify <command> [flags]
   flags     --kno PATH    every kno invocation against the released binary's own surface
   scenario  --kno PATH    every scenario end to end against committed expectations
   render    RECIPE        print one recipe's verification block
+  fixtures  --kno-src DIR the three copies of the demo fixtures, against each other
   stamp     --kno PATH    write last-verified and verified-against (CI writes these, not you)
 
 exit codes: 0 clean, 1 findings, 2 the runner itself broke`
@@ -82,6 +85,8 @@ func run(args []string) int {
 		findings, err = cmdScenario(args[1:])
 	case "render":
 		err = cmdRender(args[1:])
+	case "fixtures":
+		findings, err = cmdFixtures(args[1:])
 	case "stamp":
 		err = cmdStamp(args[1:])
 	default:
@@ -343,6 +348,109 @@ func cmdRender(args []string) error {
 // cmdStamp writes the two machine fields. It is CI's job and nobody else's:
 // a hand-edited `last-verified` is a date that is evidence of a memory rather
 // than of a run.
+// cmdFixtures compares the three copies of the demo fixture data.
+//
+// The scenario here, the copy embedded in the kno binary, and the copy typed
+// into the VHS tape must agree. The duplication is deliberate and permanent —
+// see internal/fixture — so the agreement is enforced rather than remembered.
+func cmdFixtures(args []string) ([]string, error) {
+	fs := flag.NewFlagSet("fixtures", flag.ContinueOnError)
+	src := fs.String("kno-src", "", "checkout of uknoAI/kno (required)")
+	dir := fs.String("scenario", filepath.Join("scenarios", "support-refunds"),
+		"the scenario whose fixtures `kno demo` embeds")
+	if err := fs.Parse(args); err != nil {
+		return nil, fmt.Errorf("parse flags: %w", err)
+	}
+	if *src == "" {
+		return nil, fmt.Errorf("fixtures needs --kno-src: a checkout of uknoAI/kno, which holds the two other copies")
+	}
+
+	read := func(parts ...string) ([]byte, error) {
+		p := filepath.Join(parts...)
+		b, err := os.ReadFile(p) //nolint:gosec // paths named by the caller
+		if err != nil {
+			return nil, fmt.Errorf("read %s: %w", p, err)
+		}
+		return b, nil
+	}
+
+	oursCasesRaw, err := read(*dir, "evals", "cases.jsonl")
+	if err != nil {
+		return nil, err
+	}
+	oursPoolRaw, err := read(*dir, "pool", "pool.jsonl")
+	if err != nil {
+		return nil, err
+	}
+	demoCasesRaw, err := read(*src, "cli", "demodata", "cases.jsonl")
+	if err != nil {
+		return nil, err
+	}
+	demoPoolRaw, err := read(*src, "cli", "demodata", "pool.jsonl")
+	if err != nil {
+		return nil, err
+	}
+	tapeRaw, err := read(*src, "tapes", "quickstart.tape")
+	if err != nil {
+		return nil, err
+	}
+
+	const (
+		here = "kno-examples"
+		demo = "kno cli/demodata"
+		tape = "kno tapes/quickstart.tape"
+	)
+	parse := func(name string, b []byte) ([]fixture.Record, error) {
+		rs, err := fixture.Records(b)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", name, err)
+		}
+		return rs, nil
+	}
+
+	oursCases, err := parse(here, oursCasesRaw)
+	if err != nil {
+		return nil, err
+	}
+	oursPool, err := parse(here, oursPoolRaw)
+	if err != nil {
+		return nil, err
+	}
+	demoCases, err := parse(demo, demoCasesRaw)
+	if err != nil {
+		return nil, err
+	}
+	demoPool, err := parse(demo, demoPoolRaw)
+	if err != nil {
+		return nil, err
+	}
+	tapeCases, tapePool, err := fixture.FromTape(tapeRaw)
+	if err != nil {
+		return nil, err
+	}
+
+	var findings []string
+	findings = append(findings, fixture.Compare("cases", here, oursCases, demo, demoCases)...)
+	findings = append(findings, fixture.Compare("cases", here, oursCases, tape, tapeCases)...)
+	findings = append(findings, fixture.Compare("pool", here, oursPool, demo, demoPool)...)
+	findings = append(findings, fixture.Compare("pool", here, oursPool, tape, tapePool)...)
+
+	// Both .jsonl copies are whole files serving the same purpose, so they are
+	// also held to byte equality. That catches reordering and whitespace, which
+	// a per-record comparison cannot see and which still makes two files that
+	// should be interchangeable stop being interchangeable. The tape is exempt:
+	// its records are embedded in `Type` lines, so it has no file to compare.
+	if !bytes.Equal(oursCasesRaw, demoCasesRaw) && len(findings) == 0 {
+		findings = append(findings, fmt.Sprintf(
+			"FAIL fixtures cases: every record agrees, but %s and %s are not byte-identical — check ordering and whitespace", here, demo))
+	}
+	if !bytes.Equal(oursPoolRaw, demoPoolRaw) && len(findings) == 0 {
+		findings = append(findings, fmt.Sprintf(
+			"FAIL fixtures pool: every record agrees, but %s and %s are not byte-identical — check ordering and whitespace", here, demo))
+	}
+	return findings, nil
+}
+
 func cmdStamp(args []string) error {
 	fs := flag.NewFlagSet("stamp", flag.ContinueOnError)
 	dir := fs.String("recipes", "recipes", "directory of recipe markdown files")
