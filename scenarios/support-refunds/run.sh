@@ -47,6 +47,35 @@ here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 out=${1:-$(mktemp -d)}
 mkdir -p "$out"
 
+# ── The one prerequisite, checked before anything runs ──────────────────────
+#
+# This script needs a released `kno` and nothing else, so the two most likely
+# ways for it to fail are not having one, or having one too old for the
+# subcommands below. Both used to present as near-silence: every stage's
+# stderr is captured to a file (see `pass`), so a missing binary printed one
+# stage heading and exited 127 with the reason sitting in a file whose path is
+# only announced on success.
+#
+# The version is REPORTED, never checked against a floor. A minimum-version
+# constant here would be a second copy of a fact `verified-against:` already
+# owns, and one copy of every fact is the whole point of this repository.
+kno_bin=$(command -v kno || true)
+if [ -z "$kno_bin" ]; then
+	cat >&2 <<-'EOF'
+	error: no `kno` on PATH.
+
+	This scenario runs against a released kno and nothing else. To get one:
+
+	    make install-kno
+	    PATH="$PWD/bin:$PATH" sh scenarios/support-refunds/run.sh
+
+	Or put an existing kno on your PATH.
+	EOF
+	exit 127
+fi
+printf 'scenario support-refunds: using %s (%s)\n' \
+	"$kno_bin" "$("$kno_bin" --version)" >&2
+
 stages="baseline value select export report purge"
 
 # The marked region for one stage, verbatim, with the marker lines stripped.
@@ -74,7 +103,24 @@ pass() {
 			extra=""
 		fi
 		printf 'scenario support-refunds: %s (%s)\n' "$s" "$1" >&2
-		eval "$(marked "$s") $extra" >"$out/$s.$3" 2>"$out/$s.$3.err"
+		rc=0
+		eval "$(marked "$s") $extra" >"$out/$s.$3" 2>"$out/$s.$3.err" || rc=$?
+		# `|| rc=$?` rather than `if ! eval`: under `set -e` the `!` form
+		# reports the negation's status, so the real exit code is lost.
+		if [ "$rc" -ne 0 ]; then
+			printf 'scenario support-refunds: %s FAILED (exit %s)\n' "$s" "$rc" >&2
+			# The captured stderr is the diagnosis. Replaying it here is the
+			# difference between "exit 1" and "unknown command \"select\"".
+			# `/./,$!d` drops leading blank lines so the replay starts at the
+			# first real line.
+			if [ -s "$out/$s.$3.err" ]; then
+				sed -e '/./,$!d' -e 's/^/    /' "$out/$s.$3.err" >&2
+			else
+				printf '    (the stage wrote nothing to stderr)\n' >&2
+			fi
+			printf 'artifacts in %s\n' "$out" >&2
+			exit "$rc"
+		fi
 	done
 	cd "$here"
 }
