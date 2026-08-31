@@ -142,9 +142,11 @@ committing to it. In order:
       watching. A lint in `uknoAI/kno` pins each stub to one line and one link, so a stub cannot
       quietly regrow into a second copy of a page.
 
-- [ ] **Re-point `uknoAI/kno-www`.** The twenty-two links resolve through the stubs today, which
-      is a redirect rather than a destination. A link to a stub is worse prose than a link to the
-      real page, so the site's references move here — a quality step, not a breakage fix.
+- [x] **Re-point `uknoAI/kno-www`.** All twenty-two references now point at `recipes/` here
+      rather than resolving through a stub in `uknoAI/kno`. A link to a stub is worse prose than
+      a link to the real page, so this was a quality step rather than a breakage fix. The site's
+      Playwright crawl skips external hrefs, so nothing on either side checks these links — each
+      of the ten distinct targets was fetched by hand instead.
 
 - [x] **The fixture-drift detector.** `verify fixtures` compares
       `scenarios/support-refunds/evals/cases.jsonl` and `pool/pool.jsonl` against the copy
