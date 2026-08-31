@@ -160,6 +160,13 @@ func lintIncludes(r *recipe.Recipe, scenariosDir string) []string {
 				r.Path, inc.Line, inc.Scenario, r.FrontMatter.Scenario))
 		}
 	}
+	// `executed` is a claim that CI RAN these commands. A page that declares
+	// the tier and quotes nothing runnable claims it while executing nothing —
+	// the one failure mode a tier system cannot survive, because it is
+	// indistinguishable from the real thing on the rendered page.
+	if r.FrontMatter.Verification == recipe.Executed && len(incs) == 0 {
+		findings = append(findings, "FAIL "+r.Path+": declares `verification: executed` but quotes no `kno-run` block — the tier claims CI ran something, and nothing here is runnable")
+	}
 	// An executed recipe whose stage is not the scenario's first must declare
 	// the stages it depends on, or the page grows a green tick over commands
 	// that will find an empty store.

@@ -152,3 +152,41 @@ func mustDate(t *testing.T, s string) time.Time {
 	}
 	return r.FrontMatter.LastManualVerification
 }
+
+// TestAgentSchemesExcludeEvalsAndPoolSchemes pins the split that keeps the
+// flag check from manufacturing findings.
+//
+// `kno doctor --json` enumerates AGENT adapters and nothing else, so asserting
+// an Evals or Pool scheme against it reports four working vendor recipes as
+// broken. A checker that cries wolf is a checker people stop reading, so the
+// doctor assertion sees only `--agent` values; Evals and Pool schemes are
+// checked against the scheme→credential table by Lint instead.
+func TestAgentSchemesExcludeEvalsAndPoolSchemes(t *testing.T) {
+	t.Parallel()
+	body := "```bash\n" +
+		"kno baseline --evals langsmith:my-dataset --agent openai:gpt-4.1 --yes\n" +
+		"kno value --evals hf:acme/support --pool braintrust:proj --agent anthropic:claude-opus-5\n" +
+		"```\n"
+
+	all := recipe.Schemes(body)
+	want := []string{"anthropic", "braintrust", "hf", "langsmith", "openai"}
+	if len(all) != len(want) {
+		t.Fatalf("recipe.Schemes() = %v, want %v", all, want)
+	}
+	for i, w := range want {
+		if all[i] != w {
+			t.Fatalf("recipe.Schemes() = %v, want %v", all, want)
+		}
+	}
+
+	agents := recipe.AgentSchemes(body)
+	wantAgents := []string{"anthropic", "openai"}
+	if len(agents) != len(wantAgents) {
+		t.Fatalf("recipe.AgentSchemes() = %v, want %v", agents, wantAgents)
+	}
+	for i, w := range wantAgents {
+		if agents[i] != w {
+			t.Fatalf("recipe.AgentSchemes() = %v, want %v", agents, wantAgents)
+		}
+	}
+}
