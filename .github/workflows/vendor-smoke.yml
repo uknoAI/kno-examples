@@ -1,0 +1,112 @@
+name: Vendor smoke
+
+# The only workflow in this repository that can spend money, and it is
+# deliberately inconvenient.
+#
+# Prime directive 4 — never spend the user's money silently — applies to our
+# own CI. So:
+#
+#   * workflow_dispatch ONLY. No schedule, no push, no pull_request. Nothing
+#     here ever runs unattended.
+#   * gated on the `vendor-smoke` GitHub environment, which carries required
+#     reviewers. A human authorized this run, by name, before a token existed.
+#   * three independent ceilings: --max-cost-usd and --max-calls on each
+#     invocation, plus KNO_MAX_COST_USD in the job env. A wrong price in kno's
+#     table makes the dollar cap wrong while the call cap stays right, so
+#     neither alone is a ceiling.
+#
+# Vendor recipes are, in the end, verified by a human with credentials, on a
+# schedule, with the result date-stamped by machine. That is the honest ceiling
+# and this file is what makes the date evidence of a run rather than of a
+# memory. Claiming more would be the documentation equivalent of reporting a
+# delta without its interval.
+#
+# Cadence is quarterly by convention, enforced only by the 180-day staleness
+# banner the renderer puts on the page itself. Nothing here fires on a clock.
+
+on:
+  workflow_dispatch:
+    inputs:
+      recipe:
+        description: "recipe to smoke, e.g. recipes/zendesk.md"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: run one vendor recipe for real
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: vendor-smoke
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      # The third ceiling. `make test-live` in uknoAI/kno refuses to run
+      # without this set, and the same meaning is kept here.
+      KNO_MAX_COST_USD: "2.00"
+      # Untrusted-ish input is bound to an env var rather than interpolated
+      # into a shell line.
+      RECIPE: ${{ inputs.recipe }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+
+      - name: Install the latest released kno
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
+            | KNO_INSTALL_DIR="$HOME/.local/bin" sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Refuse a recipe outside recipes/
+        run: |
+          set -euo pipefail
+          case "$RECIPE" in
+            recipes/*.md) ;;
+            *) echo "::error::$RECIPE is not a recipe path"; exit 1 ;;
+          esac
+          test -f "$RECIPE"
+
+      # The vendor steps themselves are run BY A HUMAN following the page, in
+      # this job's log, with the credentials below available. There is no
+      # automated vendor execution and this file does not pretend otherwise:
+      # what CI does here is bound the spend, prove the binary works against
+      # the vendor's endpoint, and then date-stamp the page.
+      - name: Bounded live check
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ZENDESK_API_KEY: ${{ secrets.ZENDESK_API_KEY }}
+        run: |
+          set -euo pipefail
+          kno baseline \
+            --evals scenarios/support-refunds/evals/cases.jsonl \
+            --agent openai:gpt-5.6-luna \
+            --max-cost-usd 0.50 --max-calls 12 \
+            --db "$RUNNER_TEMP/smoke.db" --run-id "smoke-$GITHUB_RUN_ID" --yes
+
+      - name: Date-stamp the recipe and open a one-line PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          today=$(date -u +%F)
+          version=$(kno --version | awk '{print "kno v" $3}')
+          sed -i "s/^last-manual-verification: .*/last-manual-verification: $today/" "$RECIPE"
+          sed -i "s/^verified-against: .*/verified-against: $version/" "$RECIPE"
+          if git diff --quiet; then exit 0; fi
+          branch="chore/vendor-smoke-$today"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -sam "chore: date-stamp $RECIPE after a vendor smoke run"
+          git push origin "$branch"
+          gh pr create --fill --base main --head "$branch"

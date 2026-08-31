@@ -1,0 +1,271 @@
+name: Nightly
+
+# Two jobs, two different questions — and that split is why this repository is
+# worth having.
+#
+#   `released` asks: are the docs wrong TODAY, for someone who ran install.sh
+#               this morning? A red `released` job means users are reading
+#               instructions that do not work. P0.
+#
+#   `main`     asks: will a change that has already merged break a recipe at
+#               the NEXT release? A red `main` job turns "the docs rotted three
+#               weeks ago" into "the PR that will rot the docs merged
+#               yesterday" — without putting scenario runtime on the critical
+#               path of every uknoAI/kno PR. Advisory, never release-blocking.
+#
+# A job inside uknoAI/kno could only ever answer one of those, and not the
+# important one: it can test HEAD (which nobody has) or the previous release
+# (which cannot validate the change under review).
+#
+# NOTHING HERE SPENDS MONEY. Every command runs against `fake:`, offline, with
+# committed data. The vendor recipes are checked for flag shapes only, which is
+# free — what actually exercises a vendor API is vendor-smoke.yml, which is
+# workflow_dispatch-only and gated on an environment with required reviewers.
+# Prime directive 4 applies to our own CI.
+
+on:
+  schedule:
+    # 07:41 UTC — uknoAI/kno's nightly convention (an odd minute, off :00 so a
+    # burst of synchronized schedules does not stall this one), shifted clear
+    # of nightly.yml's :17 and pricing-check.yml's :17.
+    - cron: "41 7 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  # The issue API is one resource. Two runs deciding "no open issue" at the
+  # same moment would file two. Dedupe is the primary defense; serializing
+  # makes the race impossible rather than merely unlikely.
+  group: nightly-drift
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  released:
+    name: recipes against the latest release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      # cosign FIRST. install.sh verifies the signature bundle only when cosign
+      # is present, and otherwise prints "cosign not found — checksum verified,
+      # signature not" and carries on. A CI job that silently skips signature
+      # verification while appearing to test the signed install path would be
+      # worse than not testing it at all.
+      - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+
+      - name: Install the latest released kno via install.sh
+        id: install
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
+            | KNO_INSTALL_DIR="$HOME/.local/bin" sh 2>&1 | tee install.log
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          # The whole reason cosign is installed above. If install.sh did not
+          # print the line, verification did not happen and this job is
+          # claiming a guarantee it does not have.
+          grep -q "Signature OK." install.log || {
+            echo "::error::install.sh did not verify the cosign signature. Refusing to report on an unverified binary."
+            exit 1
+          }
+
+      - name: Verify recipes and scenarios
+        id: verify
+        run: |
+          set -uo pipefail
+          report=$(mktemp)
+          : > "$report"
+          status=0
+          # Three passes, all findings collected. Stopping at the first would
+          # turn a nightly into a one-finding-per-night drip.
+          for step in \
+            "lint" \
+            "flags --kno $(command -v kno)" \
+            "scenario --kno $(command -v kno) --repeat 2"
+          do
+            # shellcheck disable=SC2086
+            go run ./cmd/verify $step >> "$report" 2>&1 || {
+              rc=$?
+              # Exit 2 is the runner itself breaking. An infrastructure failure
+              # is not a docs finding: go red, file nothing. Mirrors
+              # pricing-check.yml's refusal to file from an unparseable report.
+              if [ "$rc" -eq 2 ]; then
+                echo "::error::verify $step exited 2 (the runner broke, not the docs). No issue filed."
+                cat "$report"
+                exit 1
+              fi
+              status=1
+            }
+          done
+          cat "$report"
+          cp "$report" report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: File, refresh, and close docs-drift issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh label create docs-drift --color d73a4a \
+            --description "Filed by the nightly recipe verifier; closes itself when the finding is gone" \
+            2>/dev/null || true
+
+          issues=$(gh issue list --label docs-drift --state open --json number,body)
+          printf '%s' "$issues" \
+            | jq -r '.[] | .number as $n | (.body // "" | split("\n")[] | select(startswith("FAIL")) | gsub("[0-9]+"; "N")) | [$n, .] | @tsv' \
+            > open-issues.tsv
+
+          # The lifecycle DECIDES here and gh ACTS below. That split is what
+          # makes it testable without a network — internal/drift drives the
+          # script against a mocked issue list.
+          sh .github/scripts/issue-lifecycle.sh report.txt open-issues.tsv > actions.txt
+          cat actions.txt
+
+          while read -r verb rest; do
+            case "$verb" in
+              EDIT)  gh issue edit "$rest" --body-file report.txt ;;
+              CLOSE) gh issue close "$rest" --comment "finding absent from the $(date -u +%F) run — closing." ;;
+              CREATE) gh issue create --label docs-drift --title "$rest" --body-file report.txt ;;
+              "") ;;
+              *) echo "::error::unknown lifecycle action: $verb $rest"; exit 1 ;;
+            esac
+          done < actions.txt
+
+      - name: Fail loudly
+        if: steps.verify.outputs.status == '1'
+        run: |
+          echo "::error::The published recipes disagree with the released binary. The docs are wrong TODAY."
+          echo "::error::The fix is a PR in this repository, not a revert in uknoAI/kno — the release already shipped."
+          exit 1
+
+  main:
+    name: recipes against uknoAI/kno@main
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # This job files on the OTHER repository, so it needs a token that is not
+    # github.token. DOCS_DRIFT_TOKEN is a fine-grained PAT scoped to
+    # `issues: write` on uknoAI/kno and nothing else, mirroring the posture of
+    # HOMEBREW_TAP_TOKEN. It can create an issue; it cannot touch code.
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Build kno from main
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch main https://github.com/uknoAI/kno.git "$RUNNER_TEMP/kno"
+          mkdir -p "$HOME/.local/bin"
+          (cd "$RUNNER_TEMP/kno" && go build -o "$HOME/.local/bin/kno" ./cmd/kno)
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify recipes and scenarios
+        id: verify
+        run: |
+          set -uo pipefail
+          : > report.txt
+          status=0
+          for step in \
+            "lint" \
+            "flags --kno $(command -v kno)" \
+            "scenario --kno $(command -v kno) --repeat 2"
+          do
+            # shellcheck disable=SC2086
+            go run ./cmd/verify $step >> report.txt 2>&1 || {
+              rc=$?
+              if [ "$rc" -eq 2 ]; then
+                echo "::error::verify $step exited 2 (the runner broke). No issue filed."
+                cat report.txt
+                exit 1
+              fi
+              status=1
+            }
+          done
+          cat report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: File a docs-drift issue on uknoAI/kno
+        if: steps.verify.outputs.status == '1' && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_DRIFT_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::warning::DOCS_DRIFT_TOKEN is not configured; reporting in this log only."
+            exit 0
+          fi
+          issues=$(gh issue list --repo uknoAI/kno --label docs-drift --state open --json number,body)
+          printf '%s' "$issues" \
+            | jq -r '.[] | .number as $n | (.body // "" | split("\n")[] | select(startswith("FAIL")) | gsub("[0-9]+"; "N")) | [$n, .] | @tsv' \
+            > open-issues.tsv
+          sh .github/scripts/issue-lifecycle.sh report.txt open-issues.tsv > actions.txt
+          cat actions.txt
+          while read -r verb rest; do
+            case "$verb" in
+              EDIT)  gh issue edit "$rest" --repo uknoAI/kno --body-file report.txt ;;
+              CLOSE) gh issue close "$rest" --repo uknoAI/kno --comment "finding absent from the $(date -u +%F) run — closing." ;;
+              CREATE) gh issue create --repo uknoAI/kno --label docs-drift --title "[kno-examples] $rest" --body-file report.txt ;;
+            esac
+          done < actions.txt
+
+      - name: Report
+        if: steps.verify.outputs.status == '1'
+        run: |
+          echo "::warning::A merged change in uknoAI/kno will break a recipe at the next release."
+          echo "::warning::Advisory: this job never blocks a kno release. Noticing and blocking are different jobs."
+
+  stamp:
+    name: write last-verified
+    needs: released
+    if: github.event_name == 'schedule' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+      - name: Install the latest released kno
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
+            | KNO_INSTALL_DIR="$HOME/.local/bin" sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      # The date on a page is evidence of a run, never of a memory. Only CI
+      # writes it, and it only writes it after `released` was green.
+      - name: Stamp and open a PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          go run ./cmd/verify stamp --kno "$(command -v kno)"
+          if git diff --quiet; then
+            echo "nothing to stamp"
+            exit 0
+          fi
+          branch="chore/stamp-$(date -u +%F)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -sam "chore: stamp last-verified after a green nightly"
+          git push origin "$branch"
+          gh pr create --fill --base main --head "$branch" || true

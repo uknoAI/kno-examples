@@ -1,0 +1,28 @@
+{
+  "baseline": [
+    "cases      8 scored, 0 errored (of 8 dev; 4 held back)",
+    "score      1.000",
+    "spent      $0.00 over 8 call(s)",
+    "warning: the holdout has only 4 cases, too few for a meaningful confidence interval at validate"
+  ],
+  "value": [
+    "+0.0000  [-0.3960, +0.3960]",
+    "(underpowered)"
+  ],
+  "select": [
+    "Selected 0 — greedy on delta-per-cost, no approximation guarantee; keep/reject decisions used Bonferroni-corrected intervals",
+    "Rejected 3",
+    "crosses zero"
+  ],
+  "export": [
+    "wrote        tuning.jsonl (0 assets, 117 bytes)"
+  ],
+  "report": [
+    "score **1.000**",
+    "no cluster data for this run"
+  ],
+  "purge": [
+    "Purged 8 recorded row(s) for run sr-baseline.",
+    "The run is still resumable: completion records, costs, and scores were kept."
+  ]
+}

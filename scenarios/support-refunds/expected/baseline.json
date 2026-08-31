@@ -1,0 +1,15 @@
+{
+  "run_id": "sr-baseline",
+  "status": "completed",
+  "agent": "fake:",
+  "goal": "exact-match",
+  "dev_cases": 8,
+  "holdout_cases": 4,
+  "scored": 8,
+  "errored": 0,
+  "score": 1,
+  "spent_usd": "$0.00",
+  "warnings": [
+    "the holdout has only 4 cases, too few for a meaningful confidence interval at validate"
+  ]
+}

@@ -1,0 +1,18 @@
+# gitleaks configuration for uknoAI/kno-examples.
+#
+# There is no allowlist and there is not going to be one. This repository is
+# full of `export VENDOR_API_KEY=...` lines — it is the single most likely
+# place in the organization for a real key to be pasted, and a path exemption
+# here would be a hole in the one gate that would notice.
+#
+# Every credential in this repository appears in exactly two forms: the NAME of
+# an environment variable, in a recipe's `credentials:` front matter, and a
+# literal `...` placeholder in a shell line. Neither is a secret.
+#
+# If gitleaks fires on a scenario, the answer is to change the data, not to add
+# a path here. If it fires on a real key: that key is compromised the moment it
+# reached a public repository's history, and uknoAI/kno's SECURITY.md rotation
+# path applies regardless of whether the commit is later removed.
+
+[extend]
+useDefault = true

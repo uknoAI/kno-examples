@@ -1,0 +1,30 @@
+{
+  "value_run_id": "sr-value",
+  "value_status": "completed",
+  "baseline": {
+    "run_id": "sr-baseline",
+    "status": "completed",
+    "score": 1,
+    "scored": 8,
+    "errored": 0
+  },
+  "assets": [
+    {"asset_id": "brand-guide", "delta_goal": 0},
+    {"asset_id": "refund-policy-v3", "delta_goal": 0},
+    {"asset_id": "ship-promise", "delta_goal": 0}
+  ],
+  "portfolio": {
+    "run_id": "sr-select",
+    "status": "completed",
+    "validated_on_holdout": false,
+    "rejected_by_reason": [
+      {"reason": "no-effect", "count": 3}
+    ]
+  },
+  "gaps": {
+    "run_id": "sr-export",
+    "status": "completed",
+    "no_cluster_data": true,
+    "multiple_testing": false
+  }
+}

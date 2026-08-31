@@ -1,0 +1,96 @@
+name: PR
+
+# Everything a contributor's PR must pass, and nothing that costs money or
+# needs a secret.
+#
+# A fork PR runs this in full: Tier A scenarios execute against `fake:` on
+# ubuntu-latest with zero secrets. Issue filing and vendor-smoke are
+# unreachable from a fork PR by construction — no `pull_request_target`, no
+# secrets referenced here.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # gitleaks scans the full history, not just the tip: a key committed
+          # and then "removed" in a later commit is still a published key.
+          fetch-depth: 0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+
+      - name: Install the latest released kno via install.sh
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL https://raw.githubusercontent.com/uknoAI/kno/main/install.sh \
+            | KNO_INSTALL_DIR="$HOME/.local/bin" sh 2>&1 | tee install.log
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          grep -q "Signature OK." install.log || {
+            echo "::error::install.sh did not verify the cosign signature."
+            exit 1
+          }
+
+      - name: Lint the recipes
+        run: go run ./cmd/verify lint
+
+      - name: Check every command shape against the released binary
+        run: go run ./cmd/verify flags --kno "$(command -v kno)"
+
+      - name: Run the Tier A scenarios, twice
+        run: go run ./cmd/verify scenario --kno "$(command -v kno)" --repeat 2
+
+      - name: Test the verifier itself
+        env:
+          KNO_BIN: ${{ github.workspace }}/.local-kno
+        run: |
+          set -euo pipefail
+          cp "$(command -v kno)" "$KNO_BIN"
+          go vet ./...
+          go test -race -shuffle=on ./...
+
+      - name: gofmt
+        run: |
+          set -euo pipefail
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt: $unformatted"
+            exit 1
+          fi
+
+      - name: shellcheck the scenario scripts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          shellcheck --shell=sh scenarios/*/run.sh .github/scripts/*.sh
+
+  secrets:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      # A scenario repository full of `export VENDOR_API_KEY=` lines is the
+      # single most likely place in the organization for a real key to be
+      # pasted. Tree AND history: a key removed in a later commit is still a
+      # published key, and is treated as compromised per SECURITY.md.
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+          GITLEAKS_ENABLE_SUMMARY: "true"

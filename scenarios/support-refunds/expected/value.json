@@ -1,0 +1,37 @@
+{
+  "run_id": "sr-value",
+  "status": "RUN_STATUS_COMPLETED",
+  "goal_direction": "DIRECTION_MAXIMIZE",
+  "valuations": [
+    {
+      "asset_id": "brand-guide",
+      "delta_goal": 0,
+      "low": -0.39597252156206514,
+      "high": 0.39597252156206514,
+      "delta_control": 0,
+      "n_pairs": 5,
+      "n_routed": 5,
+      "n_dev": 6
+    },
+    {
+      "asset_id": "refund-policy-v3",
+      "delta_goal": 0,
+      "low": -0.39597252156206514,
+      "high": 0.39597252156206514,
+      "delta_control": 0,
+      "n_pairs": 5,
+      "n_routed": 5,
+      "n_dev": 6
+    },
+    {
+      "asset_id": "ship-promise",
+      "delta_goal": 0,
+      "low": -0.39597252156206514,
+      "high": 0.39597252156206514,
+      "delta_control": 0,
+      "n_pairs": 5,
+      "n_routed": 5,
+      "n_dev": 6
+    }
+  ]
+}

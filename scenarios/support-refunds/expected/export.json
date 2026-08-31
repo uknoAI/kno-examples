@@ -1,0 +1,8 @@
+{
+  "run_id": "sr-export",
+  "status": "completed",
+  "destination": "tuning_set",
+  "asset_count": 0,
+  "path": "tuning.jsonl",
+  "manifest_path": "tuning.jsonl.manifest.md"
+}

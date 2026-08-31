@@ -1,0 +1,22 @@
+{
+  "run_id": "sr-select",
+  "status": "RUN_STATUS_COMPLETED",
+  "source_run_id": "sr-value",
+  "source_status": "completed",
+  "budget": {
+    "max_context_tokens": 5000,
+    "max_training_examples": 10,
+    "max_cost_usd": "$1.00"
+  },
+  "selected": null,
+  "rejected": [
+    {"asset_id": "brand-guide", "reason": "no-effect"},
+    {"asset_id": "refund-policy-v3", "reason": "no-effect"},
+    {"asset_id": "ship-promise", "reason": "no-effect"}
+  ],
+  "total_cost": {
+    "context_tokens": 0,
+    "ft_tokens": 0,
+    "acquisition_usd": "$0.00"
+  }
+}
