@@ -16,13 +16,16 @@ Now something runs them.
 ```sh
 git clone https://github.com/uknoAI/kno-examples
 cd kno-examples
-sh scenarios/support-refunds/run.sh /tmp/sr
+make install-kno                    # skip if you already have one on your PATH
+PATH="$PWD/bin:$PATH" sh scenarios/support-refunds/run.sh /tmp/sr
 ```
 
-That needs a released `kno` on your `PATH` and nothing else — no key, no network after the
-install, no environment variable. It runs baseline → value → select → export → report → purge
-against the built-in `fake:` agent in about a second, and every number it prints is asserted
-against a committed expectation.
+That needs a released `kno` and nothing else — no key, no network after the install, no
+environment variable. `make install-kno` fetches one into `./bin` through Kno's own
+`install.sh`, signature and all, so the quickstart exercises the path a user exercises.
+
+It runs baseline → value → select → export → report → purge against the built-in `fake:` agent
+in about a second, and every number it prints is asserted against a committed expectation.
 
 ## What is here
 
