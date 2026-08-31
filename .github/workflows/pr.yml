@@ -55,11 +55,9 @@ jobs:
         run: go run ./cmd/verify scenario --kno "$(command -v kno)" --repeat 2
 
       - name: Test the verifier itself
-        env:
-          KNO_BIN: ${{ github.workspace }}/.local-kno
         run: |
           set -euo pipefail
-          cp "$(command -v kno)" "$KNO_BIN"
+          export KNO_BIN="$(command -v kno)"
           go vet ./...
           go test -race -shuffle=on ./...
 

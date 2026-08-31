@@ -65,15 +65,30 @@ func (s *Scenario) Run(knoPath, parent string) (*Artifacts, error) {
 	if err != nil {
 		return nil, fmt.Errorf("make artifact dir: %w", err)
 	}
+	// The binary is staged under a directory of our own, named `kno`, rather
+	// than having its own directory put on PATH. Two reasons: the caller may
+	// have it named something else (CI copies it aside as `.local-kno`), and
+	// putting a whole bin directory on PATH would let a neighbouring binary
+	// shadow something the script uses.
+	binDir := filepath.Join(out, ".bin")
+	if err := os.MkdirAll(binDir, 0o750); err != nil {
+		return nil, fmt.Errorf("make bin dir: %w", err)
+	}
+	staged := filepath.Join(binDir, "kno")
+	if err := link(knoPath, staged); err != nil {
+		return nil, err
+	}
+
 	script := filepath.Join(s.Dir, "run.sh")
 	cmd := exec.Command("sh", script, out) //nolint:gosec // script path is a repo path, not input
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stderr
 	// The scenario must need nothing from the environment but a PATH that
 	// finds kno. Handing it a curated environment is how "works on my machine
-	// because I had KNO_DB set" is made impossible.
+	// because I had KNO_DB set" is made impossible — and it is what lets the
+	// scenario's README promise "no environment variable" honestly.
 	cmd.Env = []string{
-		"PATH=" + filepath.Dir(knoPath) + string(os.PathListSeparator) + "/usr/bin:/bin:/usr/sbin:/sbin",
+		"PATH=" + binDir + string(os.PathListSeparator) + "/usr/bin:/bin:/usr/sbin:/sbin",
 		"HOME=" + out,
 		"TMPDIR=" + out,
 	}
@@ -81,6 +96,22 @@ func (s *Scenario) Run(knoPath, parent string) (*Artifacts, error) {
 		return nil, fmt.Errorf("run.sh failed: %w", err)
 	}
 	return &Artifacts{Dir: out}, nil
+}
+
+// link stages the binary as `kno`, preferring a symlink and falling back to a
+// copy where symlinks are not available.
+func link(from, to string) error {
+	if err := os.Symlink(from, to); err == nil {
+		return nil
+	}
+	b, err := os.ReadFile(from) //nolint:gosec // an installed binary named by the caller
+	if err != nil {
+		return fmt.Errorf("read %s: %w", from, err)
+	}
+	if err := os.WriteFile(to, b, 0o700); err != nil { //nolint:gosec // it must be executable
+		return fmt.Errorf("stage %s: %w", to, err)
+	}
+	return nil
 }
 
 // Expectation is one stage's committed expectations.
