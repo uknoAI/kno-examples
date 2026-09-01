@@ -50,6 +50,32 @@ The artifact is a pure function of the Portfolio and the pool: re-exporting is b
 That is real output, asserted against the binary by
 `scenarios/support-refunds/expected/quotations.json`.
 
+## What the file contains
+
+One JSON object per line, in the chat format every hosted fine-tuning API
+accepts, in selection order:
+
+```json
+{"messages":[{"role":"assistant","content":"Refunds are issued within 5 business days."}]}
+```
+
+**Every example carries an `assistant` turn.** That is not a stylistic choice —
+it is the requirement. Without an assistant message there is no target to train
+on, and a provider's file-validation step rejects the upload. If your Assets are
+plain demonstration text, Kno wraps each one as a single assistant message. If an
+Asset is *already* chat JSONL, it passes through re-marshaled to one line, and is
+**refused** if it carries no assistant turn — rather than shipped as a line that
+would fail validation later, further from the cause.
+
+Empty or whitespace-only content is refused for the same reason: a zero-example
+demonstration is not trainable at any price, and paying a provider to discover
+that is a paid no-op.
+
+> Kno versions before **v0.1.6** emitted `{"role":"user"}` and no assistant turn,
+> so every tuning set they wrote was rejected by every provider. If you have an
+> artifact from an earlier version, re-export it rather than editing it — the
+> manifest beside it records the Portfolio it came from.
+
 **Zero assets is a legal export, and the file is not empty.** The scenario's Portfolio selected
 nothing — every Asset's corrected interval crossed zero — so the tuning set carries no examples,
 and the 117 bytes are the manifest header that records *which* Portfolio produced it and that it
