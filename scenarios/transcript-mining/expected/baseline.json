@@ -1,0 +1,17 @@
+{
+  "run_id": "tm-baseline",
+  "status": "completed",
+  "agent": "fake:",
+  "goal": "exact-match",
+  "dev_cases": 14,
+  "holdout_cases": 4,
+  "scored": 14,
+  "errored": 0,
+  "score": 1,
+  "weak_label_case_count": 18,
+  "spent_usd": "$0.00",
+  "llm_calls": 14,
+  "warnings": [
+    "the holdout has only 4 cases, too few for a meaningful confidence interval at validate"
+  ]
+}

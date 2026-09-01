@@ -1,0 +1,160 @@
+{"id":"metric-001","input":"What counts as one row in fct_sessions?","expected":"One session inside the trailing 28 days.","tags":["metric-definition"]}
+{"id":"dialect-001","input":"Which SQL dialect do I query fct_sessions with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-001","input":"How often does fct_sessions land?","expected":"It lands hourly at :20 UTC.","tags":["freshness"]}
+{"id":"access-001","input":"Who can read fct_sessions?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-002","input":"What counts as one row in dim_account?","expected":"One account inside the trailing 90 days.","tags":["metric-definition"]}
+{"id":"dialect-002","input":"Which SQL dialect do I query dim_account with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-002","input":"How often does dim_account land?","expected":"It lands daily at 04:10 UTC.","tags":["freshness"]}
+{"id":"access-002","input":"Who can read dim_account?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-003","input":"What counts as one row in fct_orders?","expected":"One order inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-003","input":"Which SQL dialect do I query fct_orders with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-003","input":"How often does fct_orders land?","expected":"It lands hourly at :05 UTC.","tags":["freshness"]}
+{"id":"access-003","input":"Who can read fct_orders?","expected":"The commerce group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-004","input":"What counts as one row in agg_daily_active?","expected":"One active account inside the trailing 1 day.","tags":["metric-definition"]}
+{"id":"dialect-004","input":"Which SQL dialect do I query agg_daily_active with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-004","input":"How often does agg_daily_active land?","expected":"It lands daily at 05:00 UTC.","tags":["freshness"]}
+{"id":"access-004","input":"Who can read agg_daily_active?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-005","input":"What counts as one row in dim_plan?","expected":"One plan inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-005","input":"Which SQL dialect do I query dim_plan with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-005","input":"How often does dim_plan land?","expected":"It lands daily at 03:40 UTC.","tags":["freshness"]}
+{"id":"access-005","input":"Who can read dim_plan?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-006","input":"What counts as one row in fct_payments?","expected":"One payment inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-006","input":"Which SQL dialect do I query fct_payments with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-006","input":"How often does fct_payments land?","expected":"It lands hourly at :35 UTC.","tags":["freshness"]}
+{"id":"access-006","input":"Who can read fct_payments?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-007","input":"What counts as one row in agg_weekly_retention?","expected":"One retained account inside the trailing 7 days.","tags":["metric-definition"]}
+{"id":"dialect-007","input":"Which SQL dialect do I query agg_weekly_retention with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-007","input":"How often does agg_weekly_retention land?","expected":"It lands weekly on Monday 06:00 UTC.","tags":["freshness"]}
+{"id":"access-007","input":"Who can read agg_weekly_retention?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-008","input":"What counts as one row in dim_region?","expected":"One region inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-008","input":"Which SQL dialect do I query dim_region with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-008","input":"How often does dim_region land?","expected":"It lands daily at 03:15 UTC.","tags":["freshness"]}
+{"id":"access-008","input":"Who can read dim_region?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-009","input":"What counts as one row in fct_events?","expected":"One event inside the trailing 7 days.","tags":["metric-definition"]}
+{"id":"dialect-009","input":"Which SQL dialect do I query fct_events with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-009","input":"How often does fct_events land?","expected":"It lands every 15 minutes UTC.","tags":["freshness"]}
+{"id":"access-009","input":"Who can read fct_events?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-010","input":"What counts as one row in agg_arr?","expected":"One ARR dollar inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-010","input":"Which SQL dialect do I query agg_arr with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-010","input":"How often does agg_arr land?","expected":"It lands daily at 06:30 UTC.","tags":["freshness"]}
+{"id":"access-010","input":"Who can read agg_arr?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-011","input":"What counts as one row in dim_device?","expected":"One device inside the trailing 180 days.","tags":["metric-definition"]}
+{"id":"dialect-011","input":"Which SQL dialect do I query dim_device with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-011","input":"How often does dim_device land?","expected":"It lands daily at 03:20 UTC.","tags":["freshness"]}
+{"id":"access-011","input":"Who can read dim_device?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-012","input":"What counts as one row in fct_refunds?","expected":"One refund inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-012","input":"Which SQL dialect do I query fct_refunds with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-012","input":"How often does fct_refunds land?","expected":"It lands hourly at :45 UTC.","tags":["freshness"]}
+{"id":"access-012","input":"Who can read fct_refunds?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-013","input":"What counts as one row in agg_funnel?","expected":"One funnel step inside the trailing 14 days.","tags":["metric-definition"]}
+{"id":"dialect-013","input":"Which SQL dialect do I query agg_funnel with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-013","input":"How often does agg_funnel land?","expected":"It lands daily at 05:30 UTC.","tags":["freshness"]}
+{"id":"access-013","input":"Who can read agg_funnel?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-014","input":"What counts as one row in dim_channel?","expected":"One channel inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-014","input":"Which SQL dialect do I query dim_channel with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-014","input":"How often does dim_channel land?","expected":"It lands daily at 03:25 UTC.","tags":["freshness"]}
+{"id":"access-014","input":"Who can read dim_channel?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-015","input":"What counts as one row in fct_tickets?","expected":"One support ticket inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-015","input":"Which SQL dialect do I query fct_tickets with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-015","input":"How often does fct_tickets land?","expected":"It lands hourly at :50 UTC.","tags":["freshness"]}
+{"id":"access-015","input":"Who can read fct_tickets?","expected":"The support group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-016","input":"What counts as one row in agg_cohort?","expected":"One cohort member inside the trailing 28 days.","tags":["metric-definition"]}
+{"id":"dialect-016","input":"Which SQL dialect do I query agg_cohort with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-016","input":"How often does agg_cohort land?","expected":"It lands weekly on Monday 07:00 UTC.","tags":["freshness"]}
+{"id":"access-016","input":"Who can read agg_cohort?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-017","input":"What counts as one row in dim_currency?","expected":"One currency inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-017","input":"Which SQL dialect do I query dim_currency with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-017","input":"How often does dim_currency land?","expected":"It lands daily at 03:05 UTC.","tags":["freshness"]}
+{"id":"access-017","input":"Who can read dim_currency?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-018","input":"What counts as one row in fct_invoices?","expected":"One invoice inside the trailing 90 days.","tags":["metric-definition"]}
+{"id":"dialect-018","input":"Which SQL dialect do I query fct_invoices with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-018","input":"How often does fct_invoices land?","expected":"It lands hourly at :55 UTC.","tags":["freshness"]}
+{"id":"access-018","input":"Who can read fct_invoices?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-019","input":"What counts as one row in agg_nps?","expected":"One NPS response inside the trailing 90 days.","tags":["metric-definition"]}
+{"id":"dialect-019","input":"Which SQL dialect do I query agg_nps with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-019","input":"How often does agg_nps land?","expected":"It lands daily at 07:15 UTC.","tags":["freshness"]}
+{"id":"access-019","input":"Who can read agg_nps?","expected":"The support group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-020","input":"What counts as one row in dim_team?","expected":"One team inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-020","input":"Which SQL dialect do I query dim_team with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-020","input":"How often does dim_team land?","expected":"It lands daily at 03:35 UTC.","tags":["freshness"]}
+{"id":"access-020","input":"Who can read dim_team?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-021","input":"What counts as one row in fct_logins?","expected":"One login inside the trailing 7 days.","tags":["metric-definition"]}
+{"id":"dialect-021","input":"Which SQL dialect do I query fct_logins with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-021","input":"How often does fct_logins land?","expected":"It lands every 15 minutes UTC.","tags":["freshness"]}
+{"id":"access-021","input":"Who can read fct_logins?","expected":"The security group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-022","input":"What counts as one row in agg_mrr?","expected":"One MRR dollar inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-022","input":"Which SQL dialect do I query agg_mrr with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-022","input":"How often does agg_mrr land?","expected":"It lands daily at 06:45 UTC.","tags":["freshness"]}
+{"id":"access-022","input":"Who can read agg_mrr?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-023","input":"What counts as one row in dim_feature?","expected":"One feature flag inside the trailing 180 days.","tags":["metric-definition"]}
+{"id":"dialect-023","input":"Which SQL dialect do I query dim_feature with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-023","input":"How often does dim_feature land?","expected":"It lands daily at 03:50 UTC.","tags":["freshness"]}
+{"id":"access-023","input":"Who can read dim_feature?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-024","input":"What counts as one row in fct_trials?","expected":"One trial inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-024","input":"Which SQL dialect do I query fct_trials with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-024","input":"How often does fct_trials land?","expected":"It lands hourly at :25 UTC.","tags":["freshness"]}
+{"id":"access-024","input":"Who can read fct_trials?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-025","input":"What counts as one row in agg_churn?","expected":"One churned account inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-025","input":"Which SQL dialect do I query agg_churn with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-025","input":"How often does agg_churn land?","expected":"It lands daily at 07:30 UTC.","tags":["freshness"]}
+{"id":"access-025","input":"Who can read agg_churn?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-026","input":"What counts as one row in dim_industry?","expected":"One industry inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-026","input":"Which SQL dialect do I query dim_industry with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-026","input":"How often does dim_industry land?","expected":"It lands daily at 03:45 UTC.","tags":["freshness"]}
+{"id":"access-026","input":"Who can read dim_industry?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-027","input":"What counts as one row in fct_signups?","expected":"One signup inside the trailing 14 days.","tags":["metric-definition"]}
+{"id":"dialect-027","input":"Which SQL dialect do I query fct_signups with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-027","input":"How often does fct_signups land?","expected":"It lands hourly at :15 UTC.","tags":["freshness"]}
+{"id":"access-027","input":"Who can read fct_signups?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-028","input":"What counts as one row in agg_ltv?","expected":"One LTV dollar inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-028","input":"Which SQL dialect do I query agg_ltv with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-028","input":"How often does agg_ltv land?","expected":"It lands weekly on Monday 08:00 UTC.","tags":["freshness"]}
+{"id":"access-028","input":"Who can read agg_ltv?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-029","input":"What counts as one row in dim_source?","expected":"One source inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-029","input":"Which SQL dialect do I query dim_source with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-029","input":"How often does dim_source land?","expected":"It lands daily at 03:55 UTC.","tags":["freshness"]}
+{"id":"access-029","input":"Who can read dim_source?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-030","input":"What counts as one row in fct_upgrades?","expected":"One upgrade inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-030","input":"Which SQL dialect do I query fct_upgrades with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-030","input":"How often does fct_upgrades land?","expected":"It lands hourly at :40 UTC.","tags":["freshness"]}
+{"id":"access-030","input":"Who can read fct_upgrades?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-031","input":"What counts as one row in dim_org?","expected":"One organization inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-031","input":"Which SQL dialect do I query dim_org with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-031","input":"How often does dim_org land?","expected":"It lands daily at 03:30 UTC.","tags":["freshness"]}
+{"id":"access-031","input":"Who can read dim_org?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-032","input":"What counts as one row in fct_exports?","expected":"One export inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-032","input":"Which SQL dialect do I query fct_exports with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-032","input":"How often does fct_exports land?","expected":"It lands hourly at :10 UTC.","tags":["freshness"]}
+{"id":"access-032","input":"Who can read fct_exports?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-033","input":"What counts as one row in agg_dau_mau?","expected":"One DAU/MAU ratio inside the trailing 28 days.","tags":["metric-definition"]}
+{"id":"dialect-033","input":"Which SQL dialect do I query agg_dau_mau with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-033","input":"How often does agg_dau_mau land?","expected":"It lands daily at 05:15 UTC.","tags":["freshness"]}
+{"id":"access-033","input":"Who can read agg_dau_mau?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-034","input":"What counts as one row in dim_locale?","expected":"One locale inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-034","input":"Which SQL dialect do I query dim_locale with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-034","input":"How often does dim_locale land?","expected":"It lands daily at 03:10 UTC.","tags":["freshness"]}
+{"id":"access-034","input":"Who can read dim_locale?","expected":"The analytics group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-035","input":"What counts as one row in fct_webhooks?","expected":"One webhook delivery inside the trailing 7 days.","tags":["metric-definition"]}
+{"id":"dialect-035","input":"Which SQL dialect do I query fct_webhooks with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-035","input":"How often does fct_webhooks land?","expected":"It lands every 15 minutes UTC.","tags":["freshness"]}
+{"id":"access-035","input":"Who can read fct_webhooks?","expected":"The platform group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-036","input":"What counts as one row in agg_gross_margin?","expected":"One margin dollar inside the trailing 30 days.","tags":["metric-definition"]}
+{"id":"dialect-036","input":"Which SQL dialect do I query agg_gross_margin with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-036","input":"How often does agg_gross_margin land?","expected":"It lands daily at 06:15 UTC.","tags":["freshness"]}
+{"id":"access-036","input":"Who can read agg_gross_margin?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-037","input":"What counts as one row in dim_pricebook?","expected":"One price book entry inside the trailing 365 days.","tags":["metric-definition"]}
+{"id":"dialect-037","input":"Which SQL dialect do I query dim_pricebook with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-037","input":"How often does dim_pricebook land?","expected":"It lands daily at 03:00 UTC.","tags":["freshness"]}
+{"id":"access-037","input":"Who can read dim_pricebook?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-038","input":"What counts as one row in fct_disputes?","expected":"One dispute inside the trailing 90 days.","tags":["metric-definition"]}
+{"id":"dialect-038","input":"Which SQL dialect do I query fct_disputes with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-038","input":"How often does fct_disputes land?","expected":"It lands hourly at :30 UTC.","tags":["freshness"]}
+{"id":"access-038","input":"Who can read fct_disputes?","expected":"The finance group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-039","input":"What counts as one row in agg_activation?","expected":"One activated account inside the trailing 14 days.","tags":["metric-definition"]}
+{"id":"dialect-039","input":"Which SQL dialect do I query agg_activation with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-039","input":"How often does agg_activation land?","expected":"It lands daily at 05:45 UTC.","tags":["freshness"]}
+{"id":"access-039","input":"Who can read agg_activation?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}
+{"id":"metric-040","input":"What counts as one row in dim_segment?","expected":"One segment inside the trailing 180 days.","tags":["metric-definition"]}
+{"id":"dialect-040","input":"Which SQL dialect do I query dim_segment with?","expected":"Trino. Use date_diff, not DATEDIFF.","tags":["sql-dialect"]}
+{"id":"fresh-040","input":"How often does dim_segment land?","expected":"It lands daily at 04:00 UTC.","tags":["freshness"]}
+{"id":"access-040","input":"Who can read dim_segment?","expected":"The growth group; PII columns need an approved grant.","tags":["access-policy"]}

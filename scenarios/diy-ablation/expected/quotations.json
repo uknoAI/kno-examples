@@ -1,0 +1,23 @@
+{
+  "naive": [
+    "naive ablation over 24 cases, 3 assets",
+    "  agent   echo (returns each case's expected answer)",
+    "winner: auth-guide (+0.0000)",
+    "scored 24 of 24 cases; 0 held back"
+  ],
+  "baseline": [
+    "cases      20 scored, 0 errored (of 20 dev; 4 held back)",
+    "score      1.000",
+    "warning: the holdout has only 4 cases, too few for a meaningful confidence interval at validate"
+  ],
+  "value": [
+    "Planning 84 measurements over 3 assets against baseline diy-baseline.",
+    "+0.0000  [-0.2132, +0.2132]",
+    "low -0.2908 (underpowered)"
+  ],
+  "select": [
+    "Selected 0 — greedy on delta-per-cost, no approximation guarantee; keep/reject decisions used Bonferroni-corrected intervals",
+    "Rejected 3",
+    "no-effect         delta +0.0000, CI [-0.2604, +0.2604] crosses zero"
+  ]
+}

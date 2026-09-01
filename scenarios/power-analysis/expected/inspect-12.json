@@ -1,0 +1,57 @@
+{
+  "cases": {
+    "total": 12,
+    "dev": 11,
+    "holdout": 1
+  },
+  "behaviors": [
+    {
+      "tag": "freshness",
+      "dev_cases": 3,
+      "separable_effect": 1.76,
+      "status": "underpowered"
+    },
+    {
+      "tag": "metric-definition",
+      "dev_cases": 3,
+      "separable_effect": 1.76,
+      "status": "underpowered"
+    },
+    {
+      "tag": "sql-dialect",
+      "dev_cases": 3,
+      "separable_effect": 1.76,
+      "status": "underpowered"
+    },
+    {
+      "tag": "access-policy",
+      "dev_cases": 2,
+      "separable_effect": 6.35,
+      "status": "underpowered"
+    }
+  ],
+  "checks": [
+    {
+      "name": "behaviors_declared",
+      "status": "ok"
+    },
+    {
+      "name": "behaviors_powered",
+      "status": "flagged"
+    },
+    {
+      "name": "behavior_concentration",
+      "status": "ok"
+    },
+    {
+      "name": "holdout_powered",
+      "status": "flagged"
+    },
+    {
+      "name": "attribution_observed",
+      "status": "unknown"
+    }
+  ],
+  "checks_flagged": 2,
+  "checks_total": 5
+}

@@ -8,7 +8,7 @@
 //
 // Subcommands:
 //
-//	verify lint      [--recipes DIR]                 front matter, credentials, quoted-marker fidelity
+//	verify lint      [--recipes DIR] [--root DIR]    front matter, credentials, quoted-marker fidelity, relative links
 //	verify flags     --kno PATH [--recipes DIR]      every kno invocation against the binary's own surface
 //	verify scenario  --kno PATH [--scenario DIR] [--repeat N] [--update]
 //	verify render    FILE                            print one recipe's verification block
@@ -52,7 +52,7 @@ func main() {
 // sending anyone to read main.go.
 const usage = `usage: verify <command> [flags]
 
-  lint                    front matter, credentials, and quoted-block fidelity. Needs no binary.
+  lint                    front matter, credentials, quoted-block fidelity, and relative links. Needs no binary.
   flags     --kno PATH    every kno invocation against the released binary's own surface
   scenario  --kno PATH    every scenario end to end against committed expectations
   render    RECIPE        print one recipe's verification block
@@ -141,6 +141,7 @@ func cmdLint(args []string) ([]string, error) {
 	fs := flag.NewFlagSet("lint", flag.ContinueOnError)
 	dir := fs.String("recipes", "recipes", "directory of recipe markdown files")
 	scenarios := fs.String("scenarios", "scenarios", "directory of scenario directories")
+	root := fs.String("root", ".", "tree whose markdown links are checked")
 	if err := fs.Parse(args); err != nil {
 		return nil, fmt.Errorf("parse flags: %w", err)
 	}
@@ -153,6 +154,13 @@ func cmdLint(args []string) ([]string, error) {
 	}
 	for _, r := range rs {
 		findings = append(findings, lintIncludes(r, *scenarios)...)
+	}
+	links, err := recipe.LinkCheck(*root)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range links {
+		findings = append(findings, f.String())
 	}
 	return findings, nil
 }

@@ -1,0 +1,3 @@
+{"id":"metrics-glossary","content":"A row in a fct_ table is one event inside the table's stated trailing window. The window is part of the definition, not a filter you add.","kind":"knowledge"}
+{"id":"dialect-note","content":"The warehouse runs Trino. Use date_diff, not DATEDIFF, and cast before comparing a date to a timestamp.","kind":"knowledge"}
+{"id":"access-policy","content":"Every mart is readable by the group named in its owner field. PII columns are masked until an approved grant is attached.","kind":"knowledge"}

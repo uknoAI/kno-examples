@@ -1,0 +1,23 @@
+{
+  "run_id": "diy-select",
+  "status": "RUN_STATUS_COMPLETED",
+  "source_run_id": "diy-value",
+  "selected": null,
+  "rejected": [
+    {
+      "asset_id": "auth-guide",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.2604, +0.2604] crosses zero"
+    },
+    {
+      "asset_id": "changelog-2024",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.2604, +0.2604] crosses zero"
+    },
+    {
+      "asset_id": "limits-page",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.2604, +0.2604] crosses zero"
+    }
+  ]
+}

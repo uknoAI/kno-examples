@@ -1,0 +1,42 @@
+{
+  "inspect-12": [
+    "12 Cases — 11 dev, 1 held back",
+    "4 behaviors below core.MinClusterCases (5)",
+    "the holdout has 1 Cases (20 is the minimum for a meaningful interval at",
+    "2 of 5 checks flagged."
+  ],
+  "inspect-40": [
+    "40 Cases — 36 dev, 4 held back",
+    "every behavior has at least 5 dev Cases (core.MinClusterCases)",
+    "the holdout has 4 Cases (20 is the minimum for a meaningful interval at",
+    "1 of 5 checks flagged."
+  ],
+  "inspect-160": [
+    "160 Cases — 133 dev, 27 held back",
+    "every behavior has at least 5 dev Cases (core.MinClusterCases)",
+    "the holdout has 27 Cases (20 is the minimum for a meaningful interval at",
+    "0 of 5 checks flagged."
+  ],
+  "baseline": [
+    "Proceeding with --yes: this run's per-Case cost is unknown.",
+    "cases      133 scored, 0 errored (of 133 dev; 27 held back)",
+    "score      1.000",
+    "spent      $0.00 over 133 call(s)"
+  ],
+  "value": [
+    "Planning 567 measurements over 3 assets against baseline pa-baseline.",
+    "+0.0000  [-0.0360, +0.0360]",
+    "low -0.0567 (underpowered)",
+    "spent      $0.00 over 567 call(s)"
+  ],
+  "select": [
+    "Selected 0 — greedy on delta-per-cost, no approximation guarantee; keep/reject decisions used Bonferroni-corrected intervals",
+    "Rejected 3",
+    "CI [-0.0440, +0.0440] crosses zero"
+  ],
+  "attribute": [
+    "routing ran in all-dev mode over 0 clusters",
+    "control arm 39 Cases, minimum detectable harm 0.19 (one-sided 95%) — underpowered",
+    "0 of 5 checks flagged."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "run_id": "tm-value",
+  "status": "RUN_STATUS_COMPLETED",
+  "llm_calls": 60,
+  "valuations": [
+    {
+      "asset_id": "access-runbook",
+      "delta_goal": 0,
+      "low": -0.2772,
+      "high": 0.2772,
+      "n_pairs": 8,
+      "n_dev": 10
+    },
+    {
+      "asset_id": "device-runbook",
+      "delta_goal": 0,
+      "low": -0.2772,
+      "high": 0.2772,
+      "n_pairs": 8,
+      "n_dev": 10
+    },
+    {
+      "asset_id": "policy-digest",
+      "delta_goal": 0,
+      "low": -0.2772,
+      "high": 0.2772,
+      "n_pairs": 8,
+      "n_dev": 10
+    }
+  ]
+}

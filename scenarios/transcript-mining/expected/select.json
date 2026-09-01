@@ -1,0 +1,23 @@
+{
+  "run_id": "tm-select",
+  "status": "RUN_STATUS_COMPLETED",
+  "source_run_id": "tm-value",
+  "selected": null,
+  "rejected": [
+    {
+      "asset_id": "access-runbook",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.3386, +0.3386] crosses zero"
+    },
+    {
+      "asset_id": "device-runbook",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.3386, +0.3386] crosses zero"
+    },
+    {
+      "asset_id": "policy-digest",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.3386, +0.3386] crosses zero"
+    }
+  ]
+}

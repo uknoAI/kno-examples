@@ -12,11 +12,43 @@ not. `flags-only` and `manual` share one icon and one colour on purpose: with re
 question you are actually asking — *does this recipe work* — they are equally unverified, and the
 difference between them is a sentence, not a badge.
 
+## Start here, by what you do
+
+Four pages answer the four questions people actually arrive with. All four are free to run —
+none of them needs a key.
+
+| If you are asking | Start here | Tier |
+|---|---|---|
+| **"Why not just script this myself?"** | [Why not just script this yourself?](why-not-diy.md) | ✔ `executed` |
+| **"How many Cases do I need?"** | [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` |
+| **"What will this cost me?"** | [What a run costs](what-it-costs.md) | ✔ `executed` |
+| **"I don't have an eval set."** | [Turn the logs you already have into an eval set](mine-your-transcripts.md) | ✔ `executed` |
+
+And by role, for the rest:
+
+**Building the agent.** [Score your agent for the first time](first-baseline.md) →
+[Why not just script this yourself?](why-not-diy.md) →
+[Gate a deploy on Kno in CI](ci-gate.md) → [Point Kno at your own provider](your-own-provider.md).
+
+**Analysing the results.** [How many Cases do I need?](power-and-sample-size.md) →
+[Value a pool of assets](value-a-pool.md) →
+[Read the results in a notebook](analyze-in-a-notebook.md) →
+[Choose a portfolio under budget](select-a-portfolio.md).
+
+**Wiring the pipeline.** [Point Kno at the data you already have](from-your-warehouse.md) →
+[Turn the logs you already have into an eval set](mine-your-transcripts.md) →
+[Schedule it: Airflow, Dagster, and what to fail the run on](orchestration.md) →
+[Delete stored conversation content](retention.md).
+
 ## Core recipes
 
 | Recipe | Tier | What it covers |
 |---|---|---|
 | [Score your agent for the first time](first-baseline.md) | ✔ `executed` | Getting from an eval file to a baseline, and reading what comes back |
+| [Why not just script this yourself?](why-not-diy.md) | ✔ `executed` | The hundred-line ablation, run in CI beside Kno on the same data, and the five differences |
+| [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` | `kno eval inspect` — separable effect per behaviour, before you spend anything |
+| [What a run costs](what-it-costs.md) | ✔ `executed` | Calls per stage, four real runs' planned counts, and the three caps |
+| [Turn the logs you already have into an eval set](mine-your-transcripts.md) | ✔ `executed` (stage 1) | `kno mine` — formats, `--mode`, weak-label provenance, and what mining does not give you |
 | [Point Kno at your own provider](your-own-provider.md) | • `flags-only` | Keys, cost caps, local model servers, and the first run that can bill you |
 | [Score your agent against Claude](anthropic.md) | • `flags-only` | The Anthropic agent — `ANTHROPIC_API_KEY`, the priced models, and a complete baseline-to-report run |
 | [Score your agent on Bedrock](bedrock.md) | • `flags-only` | The AWS agent — env-only credentials, regional pricing, and the cross-region profile refusal |
@@ -27,6 +59,9 @@ difference between them is a sentence, not a badge.
 | [Export a tuning set](export-a-tuning-set.md) | ✔ `executed` (stage 4) | The destination grammar, the overwrite refusal, and the byte-identical re-export contract |
 | [Read the whole story with `kno report`](read-the-whole-story.md) | ✔ `executed` (stage 5) | One page across the stages — what each section means, what "no cluster data" says, and why the holdout caveat is mandatory |
 | [Delete stored conversation content](retention.md) | ✔ `executed` (stage 6) | What Kno keeps, what `kno purge` removes, and why it keeps the rest |
+| [Read the results in a notebook](analyze-in-a-notebook.md) | • `flags-only` | `--json` into pandas, a forest plot, and the two things not to recompute |
+| [Point Kno at the data you already have](from-your-warehouse.md) | • `flags-only` | Snowflake, BigQuery, Postgres, dbt and object storage into `cases.jsonl` and a Pool |
+| [Schedule it: Airflow, Dagster, and what to fail the run on](orchestration.md) | • `manual` | Idempotent run ids, resume across retries, where to gate, and where `kno.db` lives |
 
 Six of those are the six stages of one scenario, in order. That is not a coincidence and it is
 the design: `select`, `export`, `report`, and `purge` all read a SQLite store an earlier stage
@@ -34,6 +69,19 @@ wrote, so if the *recipe* were the unit of execution none of them could ever be 
 [`scenarios/support-refunds/run.sh`](../scenarios/support-refunds/run.sh) performs all six against
 one store, each page asserts against its own stage — and each page whose stage is not the first
 says so, next to its badge, naming the script to run first.
+
+## The four pages that are their own scenario
+
+`why-not-diy`, `power-and-sample-size`, `what-it-costs` and `mine-your-transcripts` are `executed`
+against scenarios written for them, and each of those scenarios reaches a *different* verdict or
+demonstrates a different mechanism:
+
+| Recipe | Scenario | What its run establishes |
+|---|---|---|
+| [why-not-diy](why-not-diy.md) | [`diy-ablation`](../scenarios/diy-ablation/README.md) | A committed hundred-line ablation and Kno, same data, same agent, one names a winner |
+| [power-and-sample-size](power-and-sample-size.md) | [`power-analysis`](../scenarios/power-analysis/README.md) | 12 → 40 → 160 Cases: separable effect 6.35 → 0.51 → 0.25, two checks clearing at different sizes |
+| [what-it-costs](what-it-costs.md) | [`power-analysis`](../scenarios/power-analysis/README.md) | `Planning 567 measurements` printed before the first call |
+| [mine-your-transcripts](mine-your-transcripts.md) | [`transcript-mining`](../scenarios/transcript-mining/README.md) | Transcripts in, 18 weak-label Cases out, and three of five checks flagged on what came back |
 
 ## Vendor recipes
 
@@ -57,14 +105,15 @@ approval-gated run, with the date written back by machine.
 | E-commerce | [Shopify](shopify.md) | • `flags-only` |
 | Payments | [Stripe](stripe.md) | • `flags-only` |
 | Internal knowledge | [Notion](notion.md) | • `flags-only` |
-| Workflow automation | [n8n](n8n.md) — scheduled valuation with alerts, on the exit-code contract | • `manual` |
+| Warehouse and object storage | [Your own warehouse](from-your-warehouse.md) — Snowflake, BigQuery, Postgres, dbt, S3 | • `flags-only` |
+| Workflow automation | [n8n](n8n.md) · [Airflow and Dagster](orchestration.md) | • `manual` |
 
-`n8n` is `manual` rather than `flags-only` on purpose. Its `kno` command shapes *are* checked —
-the flag check runs on every page regardless of tier, because a renamed flag is rot whether or
-not CI may execute the line. What the tier declares is what the *page* claims, and this page's
-subject is an n8n workflow: nodes, credentials, and branches configured in a UI, with the `kno`
-invocation living inside an Execute Command node. "The flags check out" says almost nothing about
-whether that workflow works, so the page does not imply that it does.
+`n8n` and `orchestration` are `manual` rather than `flags-only` on purpose. Their `kno` command
+shapes *are* checked — the flag check runs on every page regardless of tier, because a renamed
+flag is rot whether or not CI may execute the line. What the tier declares is what the *page*
+claims, and both pages' subject is a workflow configured somewhere else: nodes and credentials in
+a UI, or tasks and retries in a DAG. "The flags check out" says almost nothing about whether that
+workflow works, so the pages do not imply that it does.
 
 ## Every credential a page needs, named
 
@@ -76,11 +125,22 @@ scheme table on one page, and was thereafter merely implied.
 
 ## Still in `uknoAI/kno`
 
-One page has not migrated: **`check-your-evals`**, which documents `kno eval inspect`. That
-command exists on `uknoAI/kno@main` and is **not in any release** — `kno eval` is not a subcommand
-of v0.1.2 — so the flag check would correctly report every command on it as broken against the
-binary a reader can actually download. It stays at
+One page has not migrated: **`check-your-evals`**, which documents `kno eval inspect`.
+
+Its blocker is gone. That command was on `uknoAI/kno@main` and in no release when this repository
+was scaffolded — `kno eval` was not a subcommand of v0.1.2, so the flag check would correctly
+have reported every command on the page as broken against the binary a reader could actually
+download. **It ships in v0.1.4**, and the command's behaviour is now documented here, executed
+nightly, in [How many Cases do I need?](power-and-sample-size.md) and exercised by two scenarios.
+
+What remains is the tidy-up in the other repository: the old page at
 [`docs/cookbook/check-your-evals.md`](https://github.com/uknoAI/kno/blob/main/docs/cookbook/check-your-evals.md)
-with the code that will release it, and migrates in the release window that ships `kno eval
-inspect`. There is no tier for "documents an unreleased command", and inventing one would let any
-page claim verification against a binary that cannot run it.
+becoming a one-line stub pointing here, like the other twenty-five. That is tracked in the
+[roadmap](../README.md#roadmap).
+
+Supporting a two-level subcommand needed a change to the checker itself, which had only ever
+resolved one word after `kno`: `--evals` looked up in `kno eval --help` — which lists only `-h` —
+would have reported a working recipe as broken. `OpenBinary` now discovers children from the
+binary the same way it discovers the root list, and
+[a test corpus](../cmd/verify/testdata/nested-subcommand/) asserts that the child's real flags
+pass *and* that an invented one still fails.
