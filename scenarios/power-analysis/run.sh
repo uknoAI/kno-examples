@@ -77,6 +77,21 @@ printf 'scenario power-analysis: using %s (%s)\n' \
 
 stages="inspect-12 inspect-40 inspect-160 baseline value select attribute"
 
+# The stages that read no store an earlier stage wrote. `kno eval inspect`
+# reads an eval FILE: it constructs no agent, opens no database, and depends on
+# nothing that ran before it, so a reader can paste any of the three into a
+# fresh shell and get the output this scenario committed.
+#
+# `verify lint` reads this line. Without it, a recipe that opens with
+# `inspect-160` rather than the first stage would be required to declare
+# `requires-stages:`, and the sentence that generates — "run run.sh first, or
+# they will find nothing" — would be false. Declared here rather than inferred
+# from the command text, because a lint guessing at what `--db` implies is
+# exactly what `requires-stages:` exists to replace.
+#
+# shellcheck disable=SC2034 # read by `verify lint`, not by this script
+independent_stages="inspect-12 inspect-40 inspect-160"
+
 # The marked region for one stage, verbatim, with the marker lines stripped.
 marked() {
 	sed -n "/^# >>> $1\$/,/^# <<< $1\$/p" "$here/run.sh" | sed '1d;$d'

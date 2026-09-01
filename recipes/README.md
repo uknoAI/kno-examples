@@ -21,6 +21,7 @@ none of them needs a key.
 |---|---|---|
 | **"Why not just script this myself?"** | [Why not just script this yourself?](why-not-diy.md) | ✔ `executed` |
 | **"How many Cases do I need?"** | [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` |
+| **"Can my eval set attribute anything?"** | [Check whether your evals can attribute anything](check-your-evals.md) | ✔ `executed` |
 | **"What will this cost me?"** | [What a run costs](what-it-costs.md) | ✔ `executed` |
 | **"I don't have an eval set."** | [Turn the logs you already have into an eval set](mine-your-transcripts.md) | ✔ `executed` |
 
@@ -30,7 +31,8 @@ And by role, for the rest:
 [Why not just script this yourself?](why-not-diy.md) →
 [Gate a deploy on Kno in CI](ci-gate.md) → [Point Kno at your own provider](your-own-provider.md).
 
-**Analysing the results.** [How many Cases do I need?](power-and-sample-size.md) →
+**Analysing the results.** [Check whether your evals can attribute anything](check-your-evals.md) →
+[How many Cases do I need?](power-and-sample-size.md) →
 [Value a pool of assets](value-a-pool.md) →
 [Read the results in a notebook](analyze-in-a-notebook.md) →
 [Choose a portfolio under budget](select-a-portfolio.md).
@@ -46,7 +48,8 @@ And by role, for the rest:
 |---|---|---|
 | [Score your agent for the first time](first-baseline.md) | ✔ `executed` | Getting from an eval file to a baseline, and reading what comes back |
 | [Why not just script this yourself?](why-not-diy.md) | ✔ `executed` | The hundred-line ablation, run in CI beside Kno on the same data, and the five differences |
-| [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` | `kno eval inspect` — separable effect per behaviour, before you spend anything |
+| [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` | `kno eval inspect` at three sizes — separable effect per behaviour, before you spend anything |
+| [Check whether your evals can attribute anything](check-your-evals.md) | ✔ `executed` | The same command's full surface — the five checks, the tag caveat, the `--json` contract, and the fix for each finding |
 | [What a run costs](what-it-costs.md) | ✔ `executed` | Calls per stage, four real runs' planned counts, and the three caps |
 | [Turn the logs you already have into an eval set](mine-your-transcripts.md) | ✔ `executed` (stage 1) | `kno mine` — formats, `--mode`, weak-label provenance, and what mining does not give you |
 | [Point Kno at your own provider](your-own-provider.md) | • `flags-only` | Keys, cost caps, local model servers, and the first run that can bill you |
@@ -125,18 +128,25 @@ scheme table on one page, and was thereafter merely implied.
 
 ## Still in `uknoAI/kno`
 
-One page has not migrated: **`check-your-evals`**, which documents `kno eval inspect`.
+One page has not migrated: **`calibrate-a-judge`**, which documents `kno judge calibrate`. That
+command is on `uknoAI/kno@main` and in **no release** — `kno judge` is not a subcommand of
+v0.1.4 — so the flag check would correctly report every command on it as broken against the
+binary a reader can actually download. There is no tier for "documents an unreleased command",
+and inventing one would let any page claim verification against a binary that cannot run it. It
+migrates in the release window that ships the command.
 
-Its blocker is gone. That command was on `uknoAI/kno@main` and in no release when this repository
-was scaffolded — `kno eval` was not a subcommand of v0.1.2, so the flag check would correctly
-have reported every command on the page as broken against the binary a reader could actually
-download. **It ships in v0.1.4**, and the command's behaviour is now documented here, executed
-nightly, in [How many Cases do I need?](power-and-sample-size.md) and exercised by two scenarios.
+`check-your-evals` was in the same position and no longer is. `kno eval` was not a subcommand of
+v0.1.2 when this repository was scaffolded; **v0.1.4 ships `kno eval inspect`**, so the page
+migrated here as [Check whether your evals can attribute anything](check-your-evals.md), verified
+as `executed` against the `power-analysis` scenario. Its illustrative 200-Case output was
+replaced with the real 160-Case output CI asserts nightly — the page previously showed numbers
+no run had produced, which is the exact thing a tier is supposed to prevent.
 
-What remains is the tidy-up in the other repository: the old page at
-[`docs/cookbook/check-your-evals.md`](https://github.com/uknoAI/kno/blob/main/docs/cookbook/check-your-evals.md)
-becoming a one-line stub pointing here, like the other twenty-five. That is tracked in the
-[roadmap](../README.md#roadmap).
+Both pages are declared in `uknoAI/kno`'s
+[`scripts/cookbook-stub-check.sh`](https://github.com/uknoAI/kno/blob/main/scripts/cookbook-stub-check.sh),
+which refuses a cookbook page that is neither a one-line tombstone stub nor a declared resident.
+That gate is what makes "not migrated yet" impossible to spell the same way as "migrated and
+tombstoned".
 
 Supporting a two-level subcommand needed a change to the checker itself, which had only ever
 resolved one word after `kno`: `--evals` looked up in `kno eval --help` — which lists only `-h` —

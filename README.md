@@ -169,12 +169,14 @@ CI.
 This repository was scaffolded with one scenario end-to-end, to prove the machinery before
 committing to it. In order:
 
-- [x] **Migrate the cookbook entries.** All twenty-five migrated entries are here, each with
+- [x] **Migrate the cookbook entries.** All twenty-six migrated entries are here, each with
       front matter, a tier, and — for the vendor pages — every credential it requires named,
       including the `OPENAI_API_KEY` that `--agent openai:...` implies and that the old pages
-      never mentioned. One page stayed behind: `check-your-evals` documents `kno eval inspect`,
-      which is on `uknoAI/kno@main` and in no release, so no honest tier can be claimed for it
-      against a binary that cannot run it. It migrates with the release that ships the command.
+      never mentioned. Two pages stayed behind, for one reason: each documented a command
+      that was on `uknoAI/kno@main` and in no release, so no honest tier could be claimed for it
+      against a binary that cannot run it. `check-your-evals` has since migrated — v0.1.4 ships
+      `kno eval inspect` — leaving `calibrate-a-judge`, which documents `kno judge calibrate` and
+      migrates with the release that ships it.
 
 - [x] **Tombstone the old paths in `uknoAI/kno`.** Each migrated recipe leaves a one-line stub at
       its old path pointing here. Twenty-two branch-pinned links to
@@ -259,10 +261,10 @@ committing to it. In order:
       fail. A change that fixed only the first half would have passed a one-sided test while
       checking nothing.
 
-      This also unblocks the last un-migrated cookbook page. `check-your-evals` stayed in
-      `uknoAI/kno` because no honest tier could be claimed for a command no release shipped;
-      v0.1.4 ships it, and its subject is now documented here and executed nightly. What remains
-      is the one-line stub in the other repository, like the other twenty-five.
+      This also unblocked a migration. `check-your-evals` stayed in `uknoAI/kno` because no
+      honest tier could be claimed for a command no release shipped; v0.1.4 ships it, and the
+      page is now [`recipes/check-your-evals.md`](recipes/check-your-evals.md), `executed`
+      against `power-analysis`, with a one-line tombstone stub left at its old path.
 
 ## License
 

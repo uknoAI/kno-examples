@@ -45,6 +45,35 @@ func TestLintRefusesTheBrokenCorpus(t *testing.T) {
 	}
 }
 
+// TestLintNarrowsThePriorStageRuleToStagesThatReadAStore pins BOTH halves of
+// the `independent_stages=` relaxation, because getting one right is the trap:
+// deleting the rule would pass the first assertion and check nothing.
+//
+// The prior-stage rule exists so a green tick never sits over a command that
+// will find an empty store. But `kno eval inspect` reads an eval FILE — no
+// agent, no database, nothing an earlier stage wrote — so requiring a page
+// that opens with one to declare `requires-stages:` would make it render a
+// sentence ("run run.sh first, or they will find nothing") that is false.
+//
+// The corpus holds one recipe of each shape against one scenario: the stage
+// run.sh declares independent must pass, and the stage it does not must still
+// fail.
+func TestLintNarrowsThePriorStageRuleToStagesThatReadAStore(t *testing.T) {
+	t.Parallel()
+	findings, err := cmdLint([]string{
+		"--recipes", filepath.Join("testdata", "independent-stage", "recipes"),
+		"--scenarios", filepath.Join("testdata", "independent-stage", "scenarios"),
+		"--root", filepath.Join("testdata", "independent-stage"),
+	})
+	if err != nil {
+		t.Fatalf("lint returned an error rather than a finding: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected exactly one finding — the store-reading stage, and NOT the declared-independent one; got:\n%v", findings)
+	}
+	assertFinding(t, findings, "dependent-stage.md", `quotes stage "reads-a-store"`)
+}
+
 // TestLintCatchesAQuotedBlockThatDriftedFromRunSh is the mechanism that stops
 // `processed`/`issued` from happening again: not a review convention, a
 // failing build.
