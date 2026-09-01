@@ -144,6 +144,31 @@ func TestScenarioIsDeterministic(t *testing.T) {
 	}
 }
 
+// TestFlagCheckResolvesATwoLevelSubcommand pins both halves of the nested
+// lookup at once, because getting one half right is the trap: a checker that
+// stopped reporting `--evals` by ignoring nested commands entirely would pass
+// the first assertion and check nothing.
+//
+// `kno eval inspect` is the first command whose flags live on a child. The
+// good block must produce no finding (its flags are real, and looking them up
+// on `kno eval` — which lists only `-h` — would report a working recipe as
+// broken), and the bad block must still produce one.
+func TestFlagCheckResolvesATwoLevelSubcommand(t *testing.T) {
+	t.Parallel()
+	bin := knoBinary(t)
+	findings, err := cmdFlags([]string{
+		"--recipes", filepath.Join("testdata", "nested-subcommand", "recipes"),
+		"--kno", bin,
+	})
+	if err != nil {
+		t.Fatalf("flags: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected exactly one finding — the child's real flags must pass and only the invented one fail; got:\n%v", findings)
+	}
+	assertFinding(t, findings, "nested-subcommand.md", "`kno eval inspect` has no --maximum-holdout-frac")
+}
+
 func knoBinary(t *testing.T) string {
 	t.Helper()
 	bin := os.Getenv("KNO_BIN")
@@ -237,4 +262,30 @@ func TestHelpIsASuccessfulCommand(t *testing.T) {
 	if code := run([]string{"bogus"}); code != exitBroken {
 		t.Errorf("verify bogus = %d, want %d", code, exitBroken)
 	}
+}
+
+// TestLintRefusesABrokenRelativeLink is the other half of "a claim on a page
+// is checked by a machine". A link between two pages asserts that the thing it
+// points at is there, and nothing in either repository verified that: `make
+// docs` in uknoAI/kno skips https targets and the website's crawl skips
+// external hrefs, so a relative link that stopped resolving would have gone
+// unnoticed on both sides at once.
+//
+// The corpus also holds the three shapes that must NOT be findings — an
+// external URL, a bare anchor, and a target inside a fenced block — because a
+// checker that reports those is a checker people turn off.
+func TestLintRefusesABrokenRelativeLink(t *testing.T) {
+	t.Parallel()
+	findings, err := cmdLint([]string{
+		"--recipes", filepath.Join("testdata", "broken-link", "recipes"),
+		"--scenarios", filepath.Join("testdata", "broken-link", "scenarios"),
+		"--root", filepath.Join("testdata", "broken-link"),
+	})
+	if err != nil {
+		t.Fatalf("lint returned an error rather than a finding: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected exactly one finding — the broken link, and neither the external URL, the anchor, nor the fenced block; got:\n%v", findings)
+	}
+	assertFinding(t, findings, "broken-link.md", `the link target "value-a-pool.md" does not exist`)
 }

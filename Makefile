@@ -37,7 +37,7 @@ install-kno: ## Install the latest released kno into ./bin
 check: lint flags scenarios test fmt shellcheck ## Everything
 
 .PHONY: lint
-lint: ## Front matter, credentials, and quoted-block fidelity. Needs no binary.
+lint: ## Front matter, credentials, quoted-block fidelity, and relative links. Needs no binary.
 	go run ./cmd/verify lint
 
 .PHONY: flags

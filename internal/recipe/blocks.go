@@ -79,14 +79,28 @@ func parseInfo(info string) (lang string, tags map[string]bool, attrs map[string
 
 // Invocation is one `kno` command found in a recipe.
 type Invocation struct {
+	// Subcommand is the first word after `kno`.
 	Subcommand string
-	Flags      []string
-	Line       int
-	Runnable   bool
+	// Words is the command path as written, one or two words: `kno value`
+	// yields ["value"], `kno eval inspect` yields ["eval", "inspect"].
+	//
+	// Two words rather than one because `kno eval inspect` exists and its
+	// flags live on the CHILD. Resolving one word would look `--evals` up in
+	// `kno eval --help`, which lists only `-h`, and report a working command
+	// as broken — a false finding, in the one place a false finding is most
+	// expensive, because a checker that cries wolf is a checker people stop
+	// reading. Which of the two paths is real is not decidable here: it is a
+	// question about the binary, so FlagCheck resolves it.
+	Words    []string
+	Flags    []string
+	Line     int
+	Runnable bool
 }
 
 var (
-	knoLineRE = regexp.MustCompile(`(^|\s)kno\s+([a-z][a-z-]*)`)
+	// The optional second word is `[a-z][a-z-]*`, so a flag can never be
+	// mistaken for a child command: `--evals` starts with `-`.
+	knoLineRE = regexp.MustCompile(`(^|\s)kno\s+([a-z][a-z-]*)(?:\s+([a-z][a-z-]*))?`)
 	flagRE    = regexp.MustCompile(`--[a-z][a-z0-9-]*`)
 	schemeRE  = regexp.MustCompile(`--(?:agent|evals|pool)[= ]+"?([a-z][a-z0-9_]*):`)
 	agentRE   = regexp.MustCompile(`--agent[= ]+"?([a-z][a-z0-9_]*):`)
@@ -110,8 +124,13 @@ func Invocations(body string) []Invocation {
 			if m == nil {
 				continue
 			}
+			words := []string{m[2]}
+			if m[3] != "" {
+				words = append(words, m[3])
+			}
 			out = append(out, Invocation{
 				Subcommand: m[2],
+				Words:      words,
 				Flags:      dedupe(flagRE.FindAllString(line, -1)),
 				Line:       b.Line + i + 1,
 				Runnable:   b.Runnable(),

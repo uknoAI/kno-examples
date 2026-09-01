@@ -40,36 +40,36 @@ func OpenBinary(path string) (*Binary, error) {
 	if err != nil {
 		return nil, err
 	}
-	inCommands := false
-	for _, line := range strings.Split(root, "\n") {
-		if strings.HasPrefix(line, "Available Commands:") {
-			inCommands = true
-			continue
-		}
-		if inCommands && strings.TrimSpace(line) == "" {
-			inCommands = false
-			continue
-		}
-		if !inCommands {
-			continue
-		}
-		if m := helpCmdRE.FindStringSubmatch(line); m != nil {
-			b.subcommands[m[1]] = true
-		}
+	for _, c := range availableCommands(root) {
+		b.subcommands[c] = true
 	}
 	if len(b.subcommands) == 0 {
 		return nil, fmt.Errorf("%s printed no subcommand list; refusing to check flags against a binary we cannot read", path)
 	}
+	// Every root subcommand, then every child of one. `kno eval inspect` is
+	// the first two-level command in the surface and its flags live on the
+	// child: `kno eval --help` lists only `-h`. Discovering children here —
+	// from the binary, the same way the root list is discovered — is what
+	// keeps the checker from reporting `--evals` as removed. A hard-coded
+	// list of nested commands would be a second copy of the truth, and this
+	// repository exists because second copies drift.
 	for sub := range b.subcommands {
+		if err := b.readFlags(sub); err != nil {
+			return nil, err
+		}
+	}
+	for _, sub := range b.rootSubcommands() {
 		out, err := b.help(sub)
 		if err != nil {
 			return nil, err
 		}
-		set := map[string]bool{}
-		for _, m := range helpFlagRE.FindAllStringSubmatch(out, -1) {
-			set[m[1]] = true
+		for _, child := range availableCommands(out) {
+			path := sub + " " + child
+			b.subcommands[path] = true
+			if err := b.readFlags(sub, child); err != nil {
+				return nil, err
+			}
 		}
-		b.flags[sub] = set
 	}
 	doctor, err := run(path, "doctor", "--json")
 	if err != nil {
@@ -107,6 +107,58 @@ func (b *Binary) Schemes() []string {
 	return out
 }
 
+// rootSubcommands is the one-word command list, taken before children are
+// added to the same map.
+func (b *Binary) rootSubcommands() []string {
+	out := make([]string, 0, len(b.subcommands))
+	for s := range b.subcommands {
+		if !strings.Contains(s, " ") {
+			out = append(out, s)
+		}
+	}
+	sort.Strings(out)
+	return out
+}
+
+// readFlags records the long flags of one command path, keyed by the path as a
+// reader writes it ("eval inspect").
+func (b *Binary) readFlags(path ...string) error {
+	out, err := b.help(path...)
+	if err != nil {
+		return err
+	}
+	set := map[string]bool{}
+	for _, m := range helpFlagRE.FindAllStringSubmatch(out, -1) {
+		set[m[1]] = true
+	}
+	b.flags[strings.Join(path, " ")] = set
+	return nil
+}
+
+// availableCommands parses a help page's "Available Commands:" section. It is
+// the same shape at every level, so the root list and a child list are read by
+// one function rather than two that can disagree.
+func availableCommands(help string) []string {
+	var out []string
+	in := false
+	for _, line := range strings.Split(help, "\n") {
+		if strings.HasPrefix(line, "Available Commands:") {
+			in = true
+			continue
+		}
+		if in && strings.TrimSpace(line) == "" {
+			break
+		}
+		if !in {
+			continue
+		}
+		if m := helpCmdRE.FindStringSubmatch(line); m != nil {
+			out = append(out, m[1])
+		}
+	}
+	return out
+}
+
 func (b *Binary) help(args ...string) (string, error) {
 	return run(b.Path, append(args, "--help")...) //nolint:gocritic // appendAssign is intended: args is a fresh slice per call
 }
@@ -132,13 +184,24 @@ func FlagCheck(r *Recipe, b *Binary) []Finding {
 		out = append(out, Finding{Path: r.Path, Message: fmt.Sprintf(format, args...)})
 	}
 	for _, inv := range Invocations(r.Body) {
-		if !b.subcommands[inv.Subcommand] {
+		// Longest path first: `kno eval inspect` is checked against the child
+		// when the child exists, and against `kno eval` when it does not, so
+		// a word that is merely the next argument cannot invent a command.
+		path := ""
+		for i := len(inv.Words); i > 0; i-- {
+			p := strings.Join(inv.Words[:i], " ")
+			if b.subcommands[p] {
+				path = p
+				break
+			}
+		}
+		if path == "" {
 			add("line %d: `kno %s` is not a subcommand of this build", inv.Line, inv.Subcommand)
 			continue
 		}
 		for _, f := range inv.Flags {
-			if !b.flags[inv.Subcommand][f] {
-				add("line %d: `kno %s` has no %s flag in this build (renamed or removed)", inv.Line, inv.Subcommand, f)
+			if !b.flags[path][f] {
+				add("line %d: `kno %s` has no %s flag in this build (renamed or removed)", inv.Line, path, f)
 			}
 		}
 	}
