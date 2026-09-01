@@ -1,0 +1,23 @@
+{
+  "rejected": [
+    {
+      "asset_id": "grading-rubric",
+      "detail": "delta +0.0000, CI [-0.4232, +0.4232] crosses zero",
+      "reason": "no-effect"
+    },
+    {
+      "asset_id": "grading-voice",
+      "detail": "delta +0.0000, CI [-0.4232, +0.4232] crosses zero",
+      "reason": "no-effect"
+    },
+    {
+      "asset_id": "label-vocabulary",
+      "detail": "delta +0.0000, CI [-0.4232, +0.4232] crosses zero",
+      "reason": "no-effect"
+    }
+  ],
+  "run_id": "ep-select",
+  "selected": null,
+  "source_run_id": "ep-value",
+  "status": "RUN_STATUS_COMPLETED"
+}

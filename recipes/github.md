@@ -72,4 +72,9 @@ kno value --evals cases.jsonl --pool pool.jsonl \
 
 The same shape values example repos, style guides, and API references: content as Assets, closed issues as Cases, curated `expected` as the scoring standard.
 
+For a runnable example of a code-shaped Pool — Assets that are demonstrations rather than
+documents, routed to the fine-tuning bridge — see the
+[`coding-agent` scenario](../scenarios/coding-agent/README.md). It runs offline against
+`fake:`, so it costs nothing and needs no repository.
+
 *Vendor table and the general recipe: [Value your Zendesk knowledge](zendesk.md#same-recipe-different-source).*

@@ -51,6 +51,8 @@ Value must name the same `--agent` as the baseline — it defaults to `fake:` ot
 
 The recipe from there is the [Zendesk one](zendesk.md#5-read-it-back-into-zendesk-decisions): read the table, act on the rows. Once `select` and `export` have run, [read the whole story](read-the-whole-story.md).
 
+For a runnable example of this shape — Cases whose input is another model's answer and whose expected output is a grade — see the [`eval-platform` scenario](../scenarios/eval-platform/README.md). It runs offline against `fake:`, so it costs nothing and needs no dataset.
+
 ## What the mapping does, exactly
 
 - `inputs` and `outputs` are decoded as **ordered** JSON: named keys first (`question`, `input`, `answer`, `output`), then document order — the same row always maps to the same Case, which matters when the split hash and the run iterate separately.

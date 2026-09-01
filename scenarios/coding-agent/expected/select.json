@@ -1,0 +1,23 @@
+{
+  "rejected": [
+    {
+      "asset_id": "commit-shape",
+      "detail": "delta +0.0000, CI [-0.4232, +0.4232] crosses zero",
+      "reason": "no-effect"
+    },
+    {
+      "asset_id": "review-voice",
+      "detail": "delta +0.0000, CI [-0.4232, +0.4232] crosses zero",
+      "reason": "no-effect"
+    },
+    {
+      "asset_id": "table-test-shape",
+      "detail": "delta +0.0000, CI [-0.4232, +0.4232] crosses zero",
+      "reason": "no-effect"
+    }
+  ],
+  "run_id": "ca-select",
+  "selected": null,
+  "source_run_id": "ca-value",
+  "status": "RUN_STATUS_COMPLETED"
+}

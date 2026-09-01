@@ -74,7 +74,7 @@ field rather than remembered. A reader who pastes stage three into a fresh shell
 store, and a green tick over that failure is exactly the false confidence this repository exists
 to destroy.
 
-Today there are two, and they are a matched pair.
+Today there are four, in two pairs — one pair contrasting on verdict, one on shape.
 [`support-refunds`](scenarios/support-refunds/README.md) has twelve Cases across refunds,
 shipping, account, and billing, and three candidate Assets. All three are rejected. That is the
 interesting part — an empty Portfolio is the tool refusing to recommend something, which is the
@@ -87,6 +87,17 @@ removed, and it also rejects all three Assets — for a different reason. `suppo
 nothing to report. One is a measurement; the other is the refusal to pretend there was one. They
 look alike on screen, they mean opposite things, and a reader who conflates them will read every
 `Rejected` as "measured and found wanting".
+
+The second pair varies the *shape* rather than the verdict, because the vendor recipes needed
+more than one thing to be "the same shape as".
+[`coding-agent`](scenarios/coding-agent/README.md) answers questions about a codebase's
+conventions, and its three Assets are demonstrations rather than documents — `kind: behavior`,
+the only kind that faces the fine-tuning bridge, which until it landed no committed Asset
+exercised at all. [`eval-platform`](scenarios/eval-platform/README.md) is an LLM-as-judge: each
+Case input is *another model's answer* and the expected output is a grade, which is the shape a
+Braintrust dataset or a Langfuse trace actually has. Its Pool is mixed, so routing has to decide
+rather than send everything one way, and it exports to `context` where `coding-agent` exports to
+`tuning_set`.
 
 Its six stages carry six recipes, one each: `ci-gate` and `first-baseline` on `baseline`, then
 `value-a-pool`, `select-a-portfolio`, `export-a-tuning-set`, `read-the-whole-story`, and
@@ -157,11 +168,17 @@ committing to it. In order:
       `processed`/`issued`, and `cmd/verify/testdata/fixtures/drift-processed` is that exact bug,
       kept as a test.
 
-- [ ] **More scenarios.** [`underpowered-eval`](scenarios/underpowered-eval/README.md) is the
-      first of these: the same Cases as `support-refunds`, three fewer of them, ending in
-      `underpowered` rather than `no-effect` — a measurement refused, next to a measurement
-      made. Still wanted: a coding-agent scenario and an eval-platform scenario, so the vendor
-      recipes have more than one shape to be "the same shape as".
+- [x] **More scenarios.** Four now, in two pairs.
+      [`underpowered-eval`](scenarios/underpowered-eval/README.md) contrasts with
+      `support-refunds` on *verdict* — the same Cases, three fewer of them, ending in
+      `underpowered` rather than `no-effect`: a measurement refused next to a measurement made.
+      [`coding-agent`](scenarios/coding-agent/README.md) and
+      [`eval-platform`](scenarios/eval-platform/README.md) contrast on *shape*: a Pool of
+      `behavior` demonstrations exported to the tuning bridge, and an LLM-as-judge whose Case
+      inputs are another model's answers, carrying a mixed Pool exported to context. Before
+      them every committed Asset was `knowledge` and every vendor page deferred to a
+      customer-support recipe for its flow, including the ones about source code and eval
+      datasets.
 
       **What a new scenario can and cannot show.** Nothing committed here can demonstrate an
       Asset earning its place, and that is a property of the tool rather than of the scenarios.
