@@ -22,6 +22,7 @@ none of them needs a key.
 | **"Why not just script this myself?"** | [Why not just script this yourself?](why-not-diy.md) | ✔ `executed` |
 | **"How many Cases do I need?"** | [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` |
 | **"Can my eval set attribute anything?"** | [Check whether your evals can attribute anything](check-your-evals.md) | ✔ `executed` |
+| **"Can I trust the judge behind these numbers?"** | [Calibrate a judge](calibrate-a-judge.md) | ✔ `executed` |
 | **"What will this cost me?"** | [What a run costs](what-it-costs.md) | ✔ `executed` |
 | **"I don't have an eval set."** | [Turn the logs you already have into an eval set](mine-your-transcripts.md) | ✔ `executed` |
 
@@ -31,7 +32,8 @@ And by role, for the rest:
 [Why not just script this yourself?](why-not-diy.md) →
 [Gate a deploy on Kno in CI](ci-gate.md) → [Point Kno at your own provider](your-own-provider.md).
 
-**Analysing the results.** [Check whether your evals can attribute anything](check-your-evals.md) →
+**Analysing the results.** [Calibrate a judge](calibrate-a-judge.md) →
+[Check whether your evals can attribute anything](check-your-evals.md) →
 [How many Cases do I need?](power-and-sample-size.md) →
 [Value a pool of assets](value-a-pool.md) →
 [Read the results in a notebook](analyze-in-a-notebook.md) →
@@ -50,6 +52,7 @@ And by role, for the rest:
 | [Why not just script this yourself?](why-not-diy.md) | ✔ `executed` | The hundred-line ablation, run in CI beside Kno on the same data, and the five differences |
 | [How many Cases do I need?](power-and-sample-size.md) | ✔ `executed` | `kno eval inspect` at three sizes — separable effect per behaviour, before you spend anything |
 | [Check whether your evals can attribute anything](check-your-evals.md) | ✔ `executed` | The same command's full surface — the five checks, the tag caveat, the `--json` contract, and the fix for each finding |
+| [Calibrate a judge](calibrate-a-judge.md) | ✔ `executed` | `kno judge calibrate` — kappa against human labels, the two ways the gate refuses, and what each one blames |
 | [What a run costs](what-it-costs.md) | ✔ `executed` | Calls per stage, four real runs' planned counts, and the three caps |
 | [Turn the logs you already have into an eval set](mine-your-transcripts.md) | ✔ `executed` (stage 1) | `kno mine` — formats, `--mode`, weak-label provenance, and what mining does not give you |
 | [Point Kno at your own provider](your-own-provider.md) | • `flags-only` | Keys, cost caps, local model servers, and the first run that can bill you |
@@ -85,6 +88,7 @@ demonstrates a different mechanism:
 | [power-and-sample-size](power-and-sample-size.md) | [`power-analysis`](../scenarios/power-analysis/README.md) | 12 → 40 → 160 Cases: separable effect 6.35 → 0.51 → 0.25, two checks clearing at different sizes |
 | [what-it-costs](what-it-costs.md) | [`power-analysis`](../scenarios/power-analysis/README.md) | `Planning 567 measurements` printed before the first call |
 | [mine-your-transcripts](mine-your-transcripts.md) | [`transcript-mining`](../scenarios/transcript-mining/README.md) | Transcripts in, 18 weak-label Cases out, and three of five checks flagged on what came back |
+| [calibrate-a-judge](calibrate-a-judge.md) | [`judge-calibration`](../scenarios/judge-calibration/README.md) | kappa 0.867 against 60 human-labelled records, and the gate refusing at two floors for two different reasons |
 
 ## Vendor recipes
 
@@ -126,19 +130,23 @@ vendor pages taught a reader about the vendor's token and never mentioned that `
 openai:gpt-4.1` also bills OpenAI. `OPENAI_API_KEY` appeared once in the entire cookbook, in a
 scheme table on one page, and was thereafter merely implied.
 
-## Still in `uknoAI/kno`
+## Nothing is still in `uknoAI/kno`
 
-One page has not migrated: **`calibrate-a-judge`**, which documents `kno judge calibrate`.
+All twenty-seven cookbook entries are here. The last two took the longest and for the same
+reason: each documented a command that was on `uknoAI/kno@main` and in no release, and there is
+no tier for "documents an unreleased command" — inventing one would let any page claim
+verification against a binary that cannot run it.
 
-It was held back for the same reason `check-your-evals` was — the command was on
-`uknoAI/kno@main` and in no release, and there is no tier for "documents an unreleased command".
-**v0.1.5 ships it**, so that reason has expired and the page is simply awaiting migration, which
-is a weaker claim and worth stating as one.
+Both reasons expired within a day of each other. v0.1.4 shipped `kno eval inspect` and
+[check-your-evals](check-your-evals.md) migrated; v0.1.5 shipped `kno judge calibrate` and
+[calibrate-a-judge](calibrate-a-judge.md) followed. Neither arrived as a `manual` page: both
+commands are free, offline and deterministic, so both migrated as `executed` with a scenario
+behind them.
 
-The migration is worth doing rather than deferring: `kno judge calibrate` defaults to
-`--replay`, calls no model, and prints a deterministic kappa with a confidence interval and a
-PASS/FAIL gate against a `--min-kappa` floor. That is an `executed` scenario, not a `manual`
-page — the same shape as the four already here.
+Each leaves a one-line tombstone stub at its old path, which
+[`scripts/cookbook-stub-check.sh`](https://github.com/uknoAI/kno/blob/main/scripts/cookbook-stub-check.sh)
+holds to one line and one link. That gate now has an empty RESIDENT list, and the next page added
+to it must name the release that will ship its command.
 
 `check-your-evals` was in the same position and no longer is. `kno eval` was not a subcommand of
 v0.1.2 when this repository was scaffolded; **v0.1.4 ships `kno eval inspect`**, so the page

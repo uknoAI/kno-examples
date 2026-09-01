@@ -1,0 +1,42 @@
+{
+  "calibrate": [
+    "Calibration: exact-match against starter v1",
+    "  source     computed locally (this goal calls no model)",
+    "  records    60 scored, 0 errored",
+    "  kappa              0.867        95% CI [0.731, 0.967] (bootstrap-percentile)",
+    "  raw agreement      0.933        a constant judge scores 0.533 on this set",
+    "  sensitivity        0.875        of the records humans passed",
+    "  specificity        1.000        of the records humans failed",
+    "  inter-human kappa  0.900        the ceiling: a judge cannot beat its own labelers",
+    "  PASS",
+    "  kappa 0.867, 95% CI [0.731, 0.967], entirely at or above the 0.60 floor",
+    "  4 record(s) disagree. --show-disagreements prints them."
+  ],
+  "disagreements": [
+    "  Disagreements",
+    "  RECORD  HUMAN  JUDGE  RATIONALE",
+    "  al-000  pass   fail   output did not match the expected answer"
+  ],
+  "straddle": [
+    "  INDETERMINATE",
+    "  kappa 0.867, 95% CI [0.731, 0.967], straddles the 0.88 floor",
+    "\"We cannot tell\" is not \"it"
+  ],
+  "ceiling": [
+    "  INDETERMINATE",
+    "  the labels do not agree with each other: inter-human kappa is 0.900, below the 0.95 floor",
+    "this is a statement about the SET, not about the judge"
+  ],
+  "baseline": [
+    "cases      21 scored, 0 errored (of 21 dev; 3 held back)",
+    "score      1.000"
+  ],
+  "value": [
+    "Planning 90 measurements over 3 assets against baseline jc-baseline.",
+    "+0.0000  [-0.1980, +0.1980]"
+  ],
+  "select": [
+    "Rejected 3",
+    "keep/reject decisions used Bonferroni-corrected intervals"
+  ]
+}
