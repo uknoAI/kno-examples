@@ -1,7 +1,7 @@
 ---
 verification: flags-only
 owner: "@kno-maintainers"
-verified-against: kno v0.1.4
+verified-against: kno v0.1.6
 last-manual-verification: 2026-08-31
 credentials: [OPENAI_API_KEY, SNOWFLAKE_PASSWORD]
 ---

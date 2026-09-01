@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.1.6
 credentials: [OPENAI_API_KEY]
 ---
 # Value your GitHub knowledge: repo docs for a coding agent

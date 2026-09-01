@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.1.6
 credentials: [LANGSMITH_API_KEY, LANGSMITH_ENDPOINT, OPENAI_API_KEY]
 ---
 # Value your LangSmith datasets directly

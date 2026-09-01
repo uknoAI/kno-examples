@@ -4,7 +4,7 @@ scenario: judge-calibration
 stage: calibrate
 requires-stages: []
 last-verified: 2026-09-01
-verified-against: kno v0.1.5
+verified-against: kno v0.1.6
 ---
 
 # Calibrate a judge

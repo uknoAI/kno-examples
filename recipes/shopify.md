@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.1.6
 credentials: [OPENAI_API_KEY, SHOP, SHOPIFY_TOKEN]
 ---
 # Value your Shopify knowledge: products and policies for a storefront bot

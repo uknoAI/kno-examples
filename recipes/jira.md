@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.1.6
 credentials: [JIRA_API_TOKEN, JIRA_EMAIL, JIRA_HOST, OPENAI_API_KEY]
 ---
 # Value your Jira knowledge: issues as evals

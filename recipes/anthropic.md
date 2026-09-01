@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.1.6
 credentials: [ANTHROPIC_API_KEY, MY_GATEWAY_KEY]
 ---
 # Score your agent against Claude
