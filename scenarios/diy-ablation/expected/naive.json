@@ -1,0 +1,22 @@
+{
+  "cases_scored": 24,
+  "cases_held_back": 0,
+  "assets": [
+    {
+      "asset_id": "auth-guide",
+      "delta": 0.0
+    },
+    {
+      "asset_id": "limits-page",
+      "delta": 0.0
+    },
+    {
+      "asset_id": "changelog-2024",
+      "delta": 0.0
+    }
+  ],
+  "winner": {
+    "asset_id": "auth-guide",
+    "delta": 0.0
+  }
+}

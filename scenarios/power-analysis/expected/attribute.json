@@ -1,0 +1,30 @@
+{
+  "cases": {
+    "total": 160,
+    "dev": 133,
+    "holdout": 27
+  },
+  "checks": [
+    {
+      "name": "behaviors_declared",
+      "status": "ok"
+    },
+    {
+      "name": "behaviors_powered",
+      "status": "ok"
+    },
+    {
+      "name": "behavior_concentration",
+      "status": "ok"
+    },
+    {
+      "name": "holdout_powered",
+      "status": "ok"
+    },
+    {
+      "name": "attribution_observed",
+      "status": "ok"
+    }
+  ],
+  "checks_flagged": 0
+}

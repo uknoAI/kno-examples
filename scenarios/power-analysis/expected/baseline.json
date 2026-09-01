@@ -1,0 +1,13 @@
+{
+  "run_id": "pa-baseline",
+  "status": "completed",
+  "agent": "fake:",
+  "goal": "exact-match",
+  "dev_cases": 133,
+  "holdout_cases": 27,
+  "scored": 133,
+  "errored": 0,
+  "score": 1,
+  "spent_usd": "$0.00",
+  "llm_calls": 133
+}

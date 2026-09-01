@@ -1,0 +1,34 @@
+{"id":"m001","thread_id":"t-001","role":"user","content":"The VPN client says my certificate expired. What do I do?","timestamp":"2026-03-02T09:00:00Z"}
+{"id":"m002","thread_id":"t-001","role":"assistant","content":"Try restarting the VPN client.","timestamp":"2026-03-02T09:01:00Z"}
+{"id":"m003","thread_id":"t-001","role":"user","content":"That did not help, it still says expired.","timestamp":"2026-03-02T09:04:00Z"}
+{"id":"m004","thread_id":"t-001","role":"assistant","content":"Please contact your administrator.","timestamp":"2026-03-02T09:05:00Z"}
+{"id":"m005","thread_id":"t-001","role":"human","content":"Renew the certificate from the self-service portal, then reconnect.","timestamp":"2026-03-02T09:12:00Z"}
+{"id":"m006","thread_id":"t-002","role":"user","content":"How do I get access to the finance dashboard?","timestamp":"2026-03-02T10:00:00Z"}
+{"id":"m007","thread_id":"t-002","role":"assistant","content":"Ask your manager for access.","timestamp":"2026-03-02T10:01:00Z"}
+{"id":"m008","thread_id":"t-002","role":"human","content":"Raise an access request in the service catalogue and pick the finance-readers group.","timestamp":"2026-03-02T10:06:00Z"}
+{"id":"m009","thread_id":"t-003","role":"user","content":"My laptop will not join the guest wifi in the Dublin office.","timestamp":"2026-03-03T08:20:00Z"}
+{"id":"m010","thread_id":"t-003","role":"assistant","content":"Forget the network and rejoin it.","timestamp":"2026-03-03T08:21:00Z"}
+{"id":"m011","thread_id":"t-003","role":"user","content":"Already tried that twice.","timestamp":"2026-03-03T08:26:00Z"}
+{"id":"m012","thread_id":"t-003","role":"human","content":"Guest wifi is for visitors; put a corporate laptop on the staff network with your device certificate.","timestamp":"2026-03-03T08:33:00Z"}
+{"id":"m013","thread_id":"t-004","role":"user","content":"Can I install the beta build of the design tool?","timestamp":"2026-03-03T11:40:00Z"}
+{"id":"m014","thread_id":"t-004","role":"assistant","content":"Yes, download it from the vendor site.","timestamp":"2026-03-03T11:41:00Z"}
+{"id":"m015","thread_id":"t-004","role":"human","content":"No. Beta builds need a security review first; open a software request and note that it is a beta.","timestamp":"2026-03-03T11:52:00Z"}
+{"id":"m016","thread_id":"t-005","role":"user","content":"I am locked out after too many password attempts. How long until it clears?","timestamp":"2026-03-04T07:15:00Z"}
+{"id":"m017","thread_id":"t-005","role":"assistant","content":"It should clear eventually.","timestamp":"2026-03-04T07:16:00Z"}
+{"id":"m018","thread_id":"t-005","role":"human","content":"The lockout clears after 15 minutes, or immediately if you reset the password from an enrolled device.","timestamp":"2026-03-04T07:21:00Z"}
+{"id":"m019","thread_id":"t-006","role":"user","content":"Where do I find the retention policy for shared drives?","timestamp":"2026-03-04T13:05:00Z"}
+{"id":"m020","thread_id":"t-006","role":"assistant","content":"Check the intranet.","timestamp":"2026-03-04T13:06:00Z"}
+{"id":"m021","thread_id":"t-006","role":"human","content":"Shared drives keep files for 400 days after last access; the policy page is under Workplace, Records.","timestamp":"2026-03-04T13:14:00Z"}
+{"id":"m022","thread_id":"t-007","role":"user","content":"My new starter has no email address on their first day. Who fixes that?","timestamp":"2026-03-05T09:30:00Z"}
+{"id":"m023","thread_id":"t-007","role":"assistant","content":"Email is created automatically.","timestamp":"2026-03-05T09:31:00Z"}
+{"id":"m024","thread_id":"t-007","role":"user","content":"It has not been, they started this morning.","timestamp":"2026-03-05T09:35:00Z"}
+{"id":"m025","thread_id":"t-007","role":"human","content":"Provisioning runs the night before the start date; if the start date moved, ask HR to correct it and the account appears within an hour.","timestamp":"2026-03-05T09:48:00Z"}
+{"id":"m026","thread_id":"t-008","role":"user","content":"Can I use a personal password manager for work logins?","timestamp":"2026-03-05T15:10:00Z"}
+{"id":"m027","thread_id":"t-008","role":"assistant","content":"That is usually fine.","timestamp":"2026-03-05T15:11:00Z"}
+{"id":"m028","thread_id":"t-008","role":"human","content":"No. Work credentials go in the managed password manager only; personal vaults are out of scope for recovery and audit.","timestamp":"2026-03-05T15:19:00Z"}
+{"id":"m029","thread_id":"t-009","role":"user","content":"The meeting room display will not accept my screen share.","timestamp":"2026-03-06T10:02:00Z"}
+{"id":"m030","thread_id":"t-009","role":"assistant","content":"Restart the display.","timestamp":"2026-03-06T10:03:00Z"}
+{"id":"m031","thread_id":"t-009","role":"human","content":"Screen share needs the room to be on the same VLAN; join the meeting from the room calendar entry rather than sharing directly.","timestamp":"2026-03-06T10:15:00Z"}
+{"id":"m032","thread_id":"t-010","role":"user","content":"How do I report a phishing email?","timestamp":"2026-03-06T16:44:00Z"}
+{"id":"m033","thread_id":"t-010","role":"assistant","content":"Delete it.","timestamp":"2026-03-06T16:45:00Z"}
+{"id":"m034","thread_id":"t-010","role":"human","content":"Use the Report Phishing button in the mail client; do not delete it first, the button needs the message.","timestamp":"2026-03-06T16:49:00Z"}

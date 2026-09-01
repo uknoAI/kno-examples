@@ -60,6 +60,14 @@ jobs:
       - name: Check every command shape against the released binary
         run: go run ./cmd/verify flags --kno "$(command -v kno)"
 
+      # `diy-ablation` runs a committed python3 script as its first stage — the
+      # hand-rolled ablation the scenario exists to answer — so python3 is a
+      # prerequisite for one scenario out of seven. It is preinstalled on
+      # ubuntu-latest; asserting it here means a runner image that drops it
+      # fails with a sentence rather than with a stage that exits 127.
+      - name: Assert python3, which one scenario needs
+        run: python3 --version
+
       - name: Run the Tier A scenarios, twice
         run: go run ./cmd/verify scenario --kno "$(command -v kno)" --repeat 2
 

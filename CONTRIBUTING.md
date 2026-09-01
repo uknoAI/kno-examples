@@ -34,7 +34,7 @@ own `install.sh` if you have not got one.
 
 | | What it does |
 |---|---|
-| `make lint` | Front matter, credentials, and byte-identity between every quoted block and its `run.sh` region |
+| `make lint` | Front matter, credentials, byte-identity between every quoted block and its `run.sh` region, and every relative markdown link in the tree |
 | `make flags` | Every `kno` invocation on every page, against the released binary's `--help` and `kno doctor --json` |
 | `make scenarios` | Every scenario end-to-end, twice, comparing against committed expectations and against itself |
 | `make test` | The runner's own tests, including the deliberately broken corpus in `cmd/verify/testdata` |
@@ -65,6 +65,12 @@ table and fails on an unnamed requirement, so this is enforced rather than remem
 
 **`last-verified` and `verified-against` are CI's fields.** Do not hand-edit them. `manual` may
 carry neither; `flags-only` carries `verified-against` only.
+
+**Every relative link is checked.** `make lint` walks every `.md` in the tree and asserts each
+relative target exists. External `https://` links are deliberately NOT checked — a nightly that
+reddens on somebody else's outage is a signal people learn to override, the same reasoning that
+keeps the vendor recipes at `flags-only`. Heading anchors are not checked either: a slug is a
+claim about a renderer, not about this repository.
 
 **Never re-type a command.** If your recipe shows a command a scenario runs, quote the scenario:
 
@@ -100,6 +106,27 @@ scenarios/<domain>-<task>/
 
 The directory names are the vocabulary — `evals/`, `pool/`, `expected/`. Not `data/`, not
 `input/`, not `fixtures/`. Slugs are `<domain>-<task>`, lowercase, hyphenated.
+
+**Anything beyond those six needs a reason in the scenario's own README.** Three exist today and
+each states its reason on the page:
+
+| | Scenario | Why |
+|---|---|---|
+| `transcripts/` | `transcript-mining` | `kno mine`'s input is not an eval set, and calling it `evals/` would be a lie about what it holds |
+| `evals/generate.py` | `power-analysis` | 160 Cases whose wording is irrelevant; a committed program is a stronger provenance claim than a sentence about 160 lines |
+| `naive_ablation.py` | `diy-ablation` | the scenario's subject is the alternative to Kno, and an alternative that is described rather than executed is not an answer |
+
+**A generated or derived file needs a test.** `power-analysis/evals/cases.jsonl` must be exactly
+what `generate.py` writes; `transcript-mining/evals/cases.jsonl` must be exactly what `kno mine`
+writes over its transcripts. Both are asserted in
+[`cmd/verify/scenarios_test.go`](cmd/verify/scenarios_test.go), because a committed artefact
+nothing re-derives is a souvenir rather than an expectation, and it goes stale silently.
+
+**A non-`kno` prerequisite is checked in `run.sh`, before anything runs.** `diy-ablation` needs a
+`python3` and refuses with a sentence naming why the stage exists rather than exiting 127 out of
+an `eval`. CI asserts the same prerequisite in its own step, so a runner image that drops it
+fails as infrastructure rather than as a docs finding. Adding a prerequisite is a real cost —
+weigh it against what the stage demonstrates.
 
 **A scenario is added, never renamed.** A rename breaks every external link to it. Superseding
 one means adding the successor and marking the predecessor `deprecated: true`, which the renderer

@@ -95,6 +95,14 @@ jobs:
             exit 1
           }
 
+      # `diy-ablation` runs a committed python3 script as its first stage, so
+      # python3 is a prerequisite for one scenario out of seven. It is
+      # preinstalled on ubuntu-latest; asserting it separately means a runner
+      # image that drops it fails with a sentence rather than arriving as a
+      # scenario finding and a filed drift issue about the docs.
+      - name: Assert python3, which one scenario needs
+        run: python3 --version
+
       - name: Verify recipes and scenarios
         id: verify
         run: |
@@ -203,6 +211,14 @@ jobs:
           (cd "$RUNNER_TEMP/kno" && go build -o "$HOME/.local/bin/kno" ./cmd/kno)
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           kno --version
+
+      # `diy-ablation` runs a committed python3 script as its first stage, so
+      # python3 is a prerequisite for one scenario out of seven. It is
+      # preinstalled on ubuntu-latest; asserting it separately means a runner
+      # image that drops it fails with a sentence rather than arriving as a
+      # scenario finding and a filed drift issue about the docs.
+      - name: Assert python3, which one scenario needs
+        run: python3 --version
 
       - name: Verify recipes and scenarios
         id: verify

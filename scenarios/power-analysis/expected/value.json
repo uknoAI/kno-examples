@@ -1,0 +1,38 @@
+{
+  "run_id": "pa-value",
+  "status": "RUN_STATUS_COMPLETED",
+  "goal_direction": "DIRECTION_MAXIMIZE",
+  "llm_calls": 567,
+  "valuations": [
+    {
+      "asset_id": "access-policy",
+      "delta_goal": 0,
+      "low": -0.036,
+      "high": 0.036,
+      "control_low": -0.0567,
+      "n_pairs": 75,
+      "n_routed": 75,
+      "n_dev": 94
+    },
+    {
+      "asset_id": "dialect-note",
+      "delta_goal": 0,
+      "low": -0.036,
+      "high": 0.036,
+      "control_low": -0.0567,
+      "n_pairs": 75,
+      "n_routed": 75,
+      "n_dev": 94
+    },
+    {
+      "asset_id": "metrics-glossary",
+      "delta_goal": 0,
+      "low": -0.036,
+      "high": 0.036,
+      "control_low": -0.0567,
+      "n_pairs": 75,
+      "n_routed": 75,
+      "n_dev": 94
+    }
+  ]
+}

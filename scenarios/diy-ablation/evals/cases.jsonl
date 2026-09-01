@@ -1,0 +1,24 @@
+{"id":"auth-01","input":"Which header carries the API key?","expected":"Authorization: Bearer <key>.","tags":["auth"]}
+{"id":"auth-02","input":"How long is an access token valid?","expected":"One hour from issue.","tags":["auth"]}
+{"id":"auth-03","input":"Can I use an API key in a query parameter?","expected":"No, keys are rejected outside the Authorization header.","tags":["auth"]}
+{"id":"auth-04","input":"How do I rotate a key without downtime?","expected":"Create the new key, deploy it, then revoke the old one.","tags":["auth"]}
+{"id":"auth-05","input":"What scope do I need to read orders?","expected":"orders:read.","tags":["auth"]}
+{"id":"auth-06","input":"Do sandbox keys work in production?","expected":"No, sandbox keys are rejected by the production host.","tags":["auth"]}
+{"id":"rate-01","input":"What is the default rate limit?","expected":"600 requests per minute per key.","tags":["ratelimit"]}
+{"id":"rate-02","input":"Which header reports the remaining quota?","expected":"X-RateLimit-Remaining.","tags":["ratelimit"]}
+{"id":"rate-03","input":"What status code means I am throttled?","expected":"429.","tags":["ratelimit"]}
+{"id":"rate-04","input":"How long should I wait after a 429?","expected":"Until the Retry-After header's value, in seconds.","tags":["ratelimit"]}
+{"id":"rate-05","input":"Is the limit per key or per account?","expected":"Per key.","tags":["ratelimit"]}
+{"id":"rate-06","input":"Do failed requests count against the limit?","expected":"Yes, every request counts.","tags":["ratelimit"]}
+{"id":"hook-01","input":"How do I verify a webhook signature?","expected":"HMAC-SHA256 of the raw body, compared to the Orbit-Signature header.","tags":["webhooks"]}
+{"id":"hook-02","input":"How many times will a failed webhook be retried?","expected":"Eight times, with exponential backoff over 24 hours.","tags":["webhooks"]}
+{"id":"hook-03","input":"What response tells us the webhook was delivered?","expected":"Any 2xx within 10 seconds.","tags":["webhooks"]}
+{"id":"hook-04","input":"Are webhooks delivered in order?","expected":"No, order is not guaranteed; use the sequence field.","tags":["webhooks"]}
+{"id":"hook-05","input":"Can one endpoint receive several event types?","expected":"Yes, subscribe the endpoint to each type.","tags":["webhooks"]}
+{"id":"hook-06","input":"How do I replay a missed webhook?","expected":"POST the delivery id to /webhooks/replay.","tags":["webhooks"]}
+{"id":"err-01","input":"What does a 422 mean here?","expected":"The body parsed but a field failed validation.","tags":["errors"]}
+{"id":"err-02","input":"Where is the machine-readable error code?","expected":"In the error.code field of the JSON body.","tags":["errors"]}
+{"id":"err-03","input":"Are 5xx responses safe to retry?","expected":"Yes, every write is idempotent by Idempotency-Key.","tags":["errors"]}
+{"id":"err-04","input":"What happens if I reuse an Idempotency-Key?","expected":"The original response is returned unchanged.","tags":["errors"]}
+{"id":"err-05","input":"How long are idempotency keys remembered?","expected":"24 hours.","tags":["errors"]}
+{"id":"err-06","input":"Does a 404 mean the resource never existed?","expected":"No, it also covers a resource your key cannot see.","tags":["errors"]}

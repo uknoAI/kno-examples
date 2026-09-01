@@ -1,0 +1,33 @@
+{
+  "cases": {
+    "total": 18,
+    "dev": 14,
+    "holdout": 4,
+    "weak_label": 18
+  },
+  "behaviors": [],
+  "untagged_dev_cases": 14,
+  "checks": [
+    {
+      "name": "behaviors_declared",
+      "status": "flagged"
+    },
+    {
+      "name": "behaviors_powered",
+      "status": "unknown"
+    },
+    {
+      "name": "behavior_concentration",
+      "status": "flagged"
+    },
+    {
+      "name": "holdout_powered",
+      "status": "flagged"
+    },
+    {
+      "name": "attribution_observed",
+      "status": "unknown"
+    }
+  ],
+  "checks_flagged": 3
+}
