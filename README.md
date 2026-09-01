@@ -175,8 +175,10 @@ committing to it. In order:
       never mentioned. Two pages stayed behind, for one reason: each documented a command
       that was on `uknoAI/kno@main` and in no release, so no honest tier could be claimed for it
       against a binary that cannot run it. `check-your-evals` has since migrated — v0.1.4 ships
-      `kno eval inspect` — leaving `calibrate-a-judge`, which documents `kno judge calibrate` and
-      migrates with the release that ships it.
+      `kno eval inspect` — leaving `calibrate-a-judge`. v0.1.5 ships `kno judge calibrate` too,
+      so that page's blocker is gone as well and it is now only awaiting the work. It should be
+      an `executed` page: the command defaults to `--replay`, calls no model, and prints a
+      deterministic kappa with a PASS/FAIL gate.
 
 - [x] **Tombstone the old paths in `uknoAI/kno`.** Each migrated recipe leaves a one-line stub at
       its old path pointing here. Twenty-two branch-pinned links to

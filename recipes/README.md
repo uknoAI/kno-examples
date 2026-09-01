@@ -128,12 +128,17 @@ scheme table on one page, and was thereafter merely implied.
 
 ## Still in `uknoAI/kno`
 
-One page has not migrated: **`calibrate-a-judge`**, which documents `kno judge calibrate`. That
-command is on `uknoAI/kno@main` and in **no release** — `kno judge` is not a subcommand of
-v0.1.4 — so the flag check would correctly report every command on it as broken against the
-binary a reader can actually download. There is no tier for "documents an unreleased command",
-and inventing one would let any page claim verification against a binary that cannot run it. It
-migrates in the release window that ships the command.
+One page has not migrated: **`calibrate-a-judge`**, which documents `kno judge calibrate`.
+
+It was held back for the same reason `check-your-evals` was — the command was on
+`uknoAI/kno@main` and in no release, and there is no tier for "documents an unreleased command".
+**v0.1.5 ships it**, so that reason has expired and the page is simply awaiting migration, which
+is a weaker claim and worth stating as one.
+
+The migration is worth doing rather than deferring: `kno judge calibrate` defaults to
+`--replay`, calls no model, and prints a deterministic kappa with a confidence interval and a
+PASS/FAIL gate against a `--min-kappa` floor. That is an `executed` scenario, not a `manual`
+page — the same shape as the four already here.
 
 `check-your-evals` was in the same position and no longer is. `kno eval` was not a subcommand of
 v0.1.2 when this repository was scaffolded; **v0.1.4 ships `kno eval inspect`**, so the page
