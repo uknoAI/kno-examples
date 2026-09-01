@@ -74,7 +74,8 @@ field rather than remembered. A reader who pastes stage three into a fresh shell
 store, and a green tick over that failure is exactly the false confidence this repository exists
 to destroy.
 
-Today there are four, in two pairs — one pair contrasting on verdict, one on shape.
+Today there are seven, in three groups — a pair contrasting on verdict, a pair contrasting on
+shape, and three written to answer a question a reader actually arrives with.
 [`support-refunds`](scenarios/support-refunds/README.md) has twelve Cases across refunds,
 shipping, account, and billing, and three candidate Assets. All three are rejected. That is the
 interesting part — an empty Portfolio is the tool refusing to recommend something, which is the
@@ -99,9 +100,40 @@ Braintrust dataset or a Langfuse trace actually has. Its Pool is mixed, so routi
 rather than send everything one way, and it exports to `context` where `coding-agent` exports to
 `tuning_set`.
 
-Its six stages carry six recipes, one each: `ci-gate` and `first-baseline` on `baseline`, then
-`value-a-pool`, `select-a-portfolio`, `export-a-tuning-set`, `read-the-whole-story`, and
-`retention` on the five that follow.
+`support-refunds`'s six stages carry six recipes, one each: `ci-gate` and `first-baseline` on
+`baseline`, then `value-a-pool`, `select-a-portfolio`, `export-a-tuning-set`,
+`read-the-whole-story`, and `retention` on the five that follow.
+
+The third group exists because of a gap the first two could not close. The four pairs above
+demonstrate that the loop runs and reports honestly; none of them answers the questions a reader
+turns up with, which — asked in almost this order — are *why not script this myself*, *how many
+Cases do I need*, *what will it cost*, and *I don't have an eval set at all*. Each of the three
+new scenarios is built so that one of those has an answer CI runs nightly rather than an answer
+a page asserts.
+
+[`diy-ablation`](scenarios/diy-ablation/README.md) commits the hundred-line context ablation an
+engineer writes in an afternoon and **executes it in CI**, over the same 24 Cases, the same 3
+Assets, the same agent and the same scorer as the three `kno` stages beside it. Every delta is
+zero in both — `fake:` guarantees that — and the script still prints `winner: auth-guide`,
+because `max()` returns something. The identity of that winner is decided by the order of lines
+in `pool.jsonl`. Kno prints `Rejected 3 … crosses zero`. Same data, same numbers, opposite
+conclusions, and the difference is method.
+
+[`power-analysis`](scenarios/power-analysis/README.md) reads one eval set at 12, 40 and 160
+Cases and reports what each size could have detected: a separable effect of 6.35, then 0.51,
+then 0.25. A score lives in [0, 1], so 6.35 means *nothing is detectable at all*. Two of the
+five checks flag at twelve and none flags at 160, and they clear at different sizes — an eval
+set can be big enough to tell you which behaviour is failing and still too small to tell you
+whether you fixed it. It costs nothing: `kno eval inspect` makes no LLM call and constructs no
+agent.
+
+[`transcript-mining`](scenarios/transcript-mining/README.md) starts one step earlier than every
+other scenario here — with transcripts rather than with an eval set. One `kno mine` reads a
+directory holding a JSONL chat export and a CSV ticket export, auto-sniffs both, and writes 18
+Cases each carrying `derived`, a derivation note and a source ref. Then `kno eval inspect` flags
+three of five checks on what came back, because mining does not invent behaviour tags and
+eighteen Cases is not enough. That is the honest shape of a first day, and the tool says so
+rather than the documentation.
 
 ## How verification stays honest
 
@@ -168,7 +200,7 @@ committing to it. In order:
       `processed`/`issued`, and `cmd/verify/testdata/fixtures/drift-processed` is that exact bug,
       kept as a test.
 
-- [x] **More scenarios.** Four now, in two pairs.
+- [x] **More scenarios.** Seven now. Four in two pairs:
       [`underpowered-eval`](scenarios/underpowered-eval/README.md) contrasts with
       `support-refunds` on *verdict* — the same Cases, three fewer of them, ending in
       `underpowered` rather than `no-effect`: a measurement refused next to a measurement made.
@@ -189,6 +221,48 @@ committing to it. In order:
       Portfolio, and a non-empty one would have to be a `manual` page against a paid provider —
       a different tier making a different promise. Design new scenarios around which *verdict*
       they reach, not around whether an Asset wins.
+
+- [x] **Scenarios for the questions readers actually arrive with.** The four above prove the
+      loop runs and reports honestly. None of them answers *why not script this myself*, *how
+      many Cases do I need*, *what will it cost*, or *I have no eval set* — so
+      [`diy-ablation`](scenarios/diy-ablation/README.md),
+      [`power-analysis`](scenarios/power-analysis/README.md) and
+      [`transcript-mining`](scenarios/transcript-mining/README.md) were written to give each of
+      those an answer a machine re-checks nightly, and
+      [`why-not-diy`](recipes/why-not-diy.md),
+      [`power-and-sample-size`](recipes/power-and-sample-size.md),
+      [`what-it-costs`](recipes/what-it-costs.md) and
+      [`mine-your-transcripts`](recipes/mine-your-transcripts.md) are the `executed` pages over
+      them. Three more pages —
+      [`analyze-in-a-notebook`](recipes/analyze-in-a-notebook.md),
+      [`from-your-warehouse`](recipes/from-your-warehouse.md) and
+      [`orchestration`](recipes/orchestration.md) — cover the parts nothing here can execute,
+      and say so in their tier rather than in a footnote.
+
+      They obey the constraint above rather than working around it: every one of them ends in an
+      empty Portfolio, and each demonstrates something that is a function of the Case count, the
+      Asset count or the file format rather than of any model's behaviour — which is exactly the
+      class of claim that survives the move to a paid provider unchanged.
+
+      `diy-ablation` is the one that needed a new precedent. It executes a **non-`kno`** program
+      in a stage — `naive_ablation.py`, committed in full — because the standing objection to a
+      measurement tool cannot be answered by describing the alternative. It has to be answered by
+      running it. That makes `python3` a prerequisite for one scenario out of seven, checked and
+      named in its `run.sh` rather than discovered as a stack trace.
+
+- [x] **A two-level subcommand in the checker.** `kno eval inspect` shipped in v0.1.4 and is the
+      first command whose flags live on a child: `kno eval --help` lists only `-h`, so resolving
+      one word after `kno` reported `--evals` as removed. `OpenBinary` now discovers children
+      from the binary the same way it discovers the root list, and
+      [`cmd/verify/testdata/nested-subcommand/`](cmd/verify/testdata/nested-subcommand/) holds
+      both halves of the claim: the child's real flags must pass, and an invented one must still
+      fail. A change that fixed only the first half would have passed a one-sided test while
+      checking nothing.
+
+      This also unblocks the last un-migrated cookbook page. `check-your-evals` stayed in
+      `uknoAI/kno` because no honest tier could be claimed for a command no release shipped;
+      v0.1.4 ships it, and its subject is now documented here and executed nightly. What remains
+      is the one-line stub in the other repository, like the other twenty-five.
 
 ## License
 
