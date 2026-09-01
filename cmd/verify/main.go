@@ -204,14 +204,33 @@ func lintIncludes(r *recipe.Recipe, scenariosDir string) []string {
 	// An executed recipe whose stage is not the scenario's first must declare
 	// the stages it depends on, or the page grows a green tick over commands
 	// that will find an empty store.
+	//
+	// Unless the stage does not read a store at all. `kno eval inspect` reads
+	// an eval FILE — it constructs no agent, opens no database, and depends on
+	// nothing that ran before it — so demanding `requires-stages:` from a page
+	// that opens with one would force the page to make a false statement about
+	// itself, and the generated "run run.sh first, or they will find nothing"
+	// sentence would be wrong.
+	//
+	// Which stages those are is DECLARED by the scenario, in an
+	// `independent_stages=` line beside `stages=`, rather than inferred from
+	// the command text. Inferring it would mean this lint guessing at what
+	// `--db` and `--baseline-run-id` imply, and a guess is exactly what the
+	// requires-stages field exists to replace.
 	if r.FrontMatter.Verification == recipe.Executed && len(incs) > 0 {
-		first, err := firstStage(filepath.Join(scenariosDir, r.FrontMatter.Scenario, "run.sh"))
+		script := filepath.Join(scenariosDir, r.FrontMatter.Scenario, "run.sh")
+		first, err := firstStage(script)
 		if err != nil {
 			findings = append(findings, "FAIL "+r.Path+": "+err.Error())
 		} else if incs[0].Stage != first && len(r.FrontMatter.RequiresStages) == 0 {
-			findings = append(findings, fmt.Sprintf(
-				"FAIL %s: quotes stage %q, which is not the scenario's first stage (%q), but declares no `requires-stages:` — a reader pasting this gets an empty store",
-				r.Path, incs[0].Stage, first))
+			independent, err := independentStages(script)
+			if err != nil {
+				findings = append(findings, "FAIL "+r.Path+": "+err.Error())
+			} else if !independent[incs[0].Stage] {
+				findings = append(findings, fmt.Sprintf(
+					"FAIL %s: quotes stage %q, which is not the scenario's first stage (%q), but declares no `requires-stages:` — a reader pasting this gets an empty store. If the stage reads no store, declare it in %s's `independent_stages=` line.",
+					r.Path, incs[0].Stage, first, script))
+			}
 		}
 	}
 	return findings
@@ -234,6 +253,32 @@ func markedRegion(script, stage string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("%s has no `%s` region", script, stage)
+}
+
+// independentStages reads a scenario's optional `independent_stages=` line:
+// the stages that read no store an earlier stage wrote, and can therefore be
+// pasted into a fresh shell on their own.
+//
+// A scenario that declares none is not an error. Most scenarios have none —
+// every stage after `baseline` reads what `baseline` recorded — and the empty
+// set is the safe default: it means the prior-stage rule applies to every
+// stage but the first, which is where the rule started.
+func independentStages(script string) (map[string]bool, error) {
+	b, err := os.ReadFile(script) //nolint:gosec // repo path
+	if err != nil {
+		return nil, fmt.Errorf("read %s: %w", script, err)
+	}
+	out := map[string]bool{}
+	for _, l := range strings.Split(string(b), "\n") {
+		if !strings.HasPrefix(l, "independent_stages=") {
+			continue
+		}
+		for _, f := range strings.Fields(strings.Trim(strings.TrimPrefix(l, "independent_stages="), `"`)) {
+			out[f] = true
+		}
+		break
+	}
+	return out, nil
 }
 
 func firstStage(script string) (string, error) {

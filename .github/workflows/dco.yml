@@ -1,0 +1,90 @@
+name: DCO
+
+# CONTRIBUTING.md says "The `dco` check enforces it." Until this file existed,
+# it did not: this repository has required a Developer Certificate of Origin
+# sign-off since it was scaffolded, documented that a check enforced the
+# requirement, and shipped no such workflow. Every PR merged without one.
+#
+# A gate that is ABSENT rather than red is the worst kind. A red gate gets
+# fixed; a missing one reads as a passing one, and the sentence in CONTRIBUTING
+# was doing the work of a mechanism — which is precisely the failure mode this
+# repository exists to catch in documentation. It is worth stating that it
+# happened here, in the tooling, and not only in the docs we check.
+#
+# Ported from `uknoAI/kno`'s dco.yml so both repositories enforce the same rule
+# the same way. Actions are SHA-pinned, which is this repository's convention.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  # The job name is what shows up in the checks list, and CONTRIBUTING.md calls
+  # it `dco`. A check whose documented name does not match its rendered name is
+  # a check nobody can confirm ran.
+  dco:
+    name: dco
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Bots do not sign off, and cannot.
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Every commit must be signed off
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          # Fail CLOSED. If the range cannot be read (force-push, unusual fork
+          # topology, shallow fetch), `git rev-list` errors, the loop body never
+          # runs, and a naive script reports success. Materialize the list first
+          # and check the exit status.
+          if ! commits="$(git rev-list --no-merges "$BASE".."$HEAD")"; then
+            echo "::error::cannot read commit range $BASE..$HEAD — refusing to pass"
+            exit 1
+          fi
+
+          if [ -z "$commits" ]; then
+            echo "no non-merge commits in range; nothing to verify"
+            exit 0
+          fi
+
+          failed=0
+          while read -r sha; do
+            [ -z "$sha" ] && continue
+            author="$(git show -s --format='%an <%ae>' "$sha")"
+            committer="$(git show -s --format='%cn <%ce>' "$sha")"
+            body="$(git show -s --format='%B' "$sha")"
+            # The DCO permits either the author or the committer to sign off.
+            # `grep -x` anchors the whole line so a trailer is a trailer rather
+            # than a substring; `-F` treats the name and email literally, so a
+            # real name containing . + ( ) needs no regex escaping.
+            #
+            # Trailing whitespace is stripped first, and that is not cosmetic:
+            # -x anchors the WHOLE line, so a trailer with one trailing space —
+            # which several editors append on save — would fail a commit that is
+            # correctly signed off. `tr -d '\r'` handles the CRLF case for the
+            # same reason.
+            if printf '%s\n' "$body" | tr -d '\r' | sed 's/[[:space:]]*$//' \
+                 | grep -qxiF -e "Signed-off-by: $author" -e "Signed-off-by: $committer"; then
+              continue
+            fi
+            echo "::error::commit $sha is missing 'Signed-off-by: $author'"
+            failed=1
+          done <<< "$commits"
+
+          if [ "$failed" -ne 0 ]; then
+            echo "Sign off with: git commit -s   (or fix history: git rebase --signoff $BASE)"
+            echo "See CONTRIBUTING.md — we use the DCO, not a CLA."
+            exit 1
+          fi
+          echo "all commits signed off"

@@ -96,7 +96,7 @@ pass() {
 	cd "$dir"
 	for s in $stages; do
 		extra=$2
-		# mine speaks no JSON (verified against kno v0.1.4), so it runs plain
+		# mine speaks no JSON (verified against kno v0.1.5), so it runs plain
 		# in both passes and is asserted by quotation only.
 		if [ "$s" = mine ]; then
 			extra=""
