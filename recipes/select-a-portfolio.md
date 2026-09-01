@@ -3,8 +3,8 @@ verification: executed
 scenario: support-refunds
 stage: select
 requires-stages: [baseline, value]
-last-verified: 2026-08-31
-verified-against: kno v0.1.2
+last-verified: 2026-09-01
+verified-against: kno v0.1.6
 ---
 
 # Choose a portfolio under budget

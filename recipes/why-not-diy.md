@@ -3,8 +3,8 @@ verification: executed
 scenario: diy-ablation
 stage: naive
 requires-stages: []
-last-verified: 2026-08-31
-verified-against: kno v0.1.4
+last-verified: 2026-09-01
+verified-against: kno v0.1.6
 ---
 
 # Why not just script this yourself?

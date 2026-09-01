@@ -3,8 +3,8 @@ verification: executed
 scenario: transcript-mining
 stage: mine
 requires-stages: []
-last-verified: 2026-08-31
-verified-against: kno v0.1.4
+last-verified: 2026-09-01
+verified-against: kno v0.1.6
 ---
 
 # Turn the logs you already have into an eval set
