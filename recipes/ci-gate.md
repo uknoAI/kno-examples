@@ -64,7 +64,10 @@ Both `2` and `4` leave a resumable run: work already recorded is never paid for 
   "scored": 8,
   "errored": 0,
   "score": 1,
+  "guarded": true,
   "spent_usd": "$0.00",
+  "spent_usd_micros": 0,
+  "llm_calls": 8,
   "concurrency": 1,
   "warnings": [
     "the holdout has only 4 cases, too few for a meaningful confidence interval at validate"
@@ -73,10 +76,41 @@ Both `2` and `4` leave a resumable run: work already recorded is never paid for 
 ```
 
 That is a real document, not a sketch: the fields this page tells you to branch on — `status`,
-`attempted`, `errored`, `score`, `spent_usd`, `warnings` — are projected into
+`attempted`, `errored`, `score`, `guarded`, `spent_usd`, `warnings` — are projected into
 `scenarios/support-refunds/expected/baseline.json` and compared against what the binary printed.
 A renamed or removed field turns this page red; a field added elsewhere in the document does not,
 because the projection holds only what the page claims.
+
+### Sum spend with `guarded`, never with `// 0`
+
+Not every stage spends. `kno select`, `kno export` and `kno report` run no budget
+guard, make no LLM call, and emit **no spend keys at all** — because a uniform
+`"spent_usd": "$0.00"` would be indistinguishable from *"this stage spent money and
+the meter is missing"*.
+
+That absence is quieter than it looks. `jq`'s `.spent_usd_micros` on a document
+without the key returns `null`, which is what makes the obvious repair wrong:
+
+```bash
+# WRONG: reinstates the exact ambiguity the omission removes.
+jq -s 'map(.spent_usd_micros // 0) | add' baseline.json value.json select.json
+```
+
+`// 0` turns "this stage does not meter spend" and "this stage spent nothing" into
+the same number. Branch on `guarded` instead, which is the positive signal:
+
+```bash
+# Total spend across a pipeline, counting only stages that actually meter it.
+jq -s 'map(select(.guarded) | .spent_usd_micros) | add' baseline.json value.json select.json
+
+# Fail the job if a metered stage went over budget.
+jq -e 'select(.guarded) | .spent_usd_micros < 5000000' value.json
+```
+
+`guarded` is a fact about the **stage**, not the run: `true` for `baseline`,
+`value`, `validate` and `bridge` on every agent including `fake:` — where the
+figure legitimately reads `$0.00` beside a non-zero `llm_calls` — and `false` for
+`select`, `export` and `report`.
 
 **Check `warnings` in CI.** They qualify the result, and a scripted consumer that ignores them is reading a number without the reason it might be wrong:
 
