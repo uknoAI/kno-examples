@@ -1,0 +1,24 @@
+{"id":"hours-01","input":"What time does the central branch open on Saturday?","expected":"Nine in the morning, until five.","tags":["hours"]}
+{"id":"hours-02","input":"Are you open on public holidays?","expected":"No, every branch closes on a public holiday.","tags":["hours"]}
+{"id":"hours-03","input":"When is the last entry before closing?","expected":"Fifteen minutes before the branch closes.","tags":["hours"]}
+{"id":"hours-04","input":"Does the reading room keep different hours?","expected":"Yes, it opens an hour later than the branch.","tags":["hours"]}
+{"id":"hours-05","input":"What time do the self-service machines stop?","expected":"Ten minutes before closing.","tags":["hours"]}
+{"id":"hours-06","input":"Is the branch open on Sunday?","expected":"Only the central branch, from noon until four.","tags":["hours"]}
+{"id":"borrow-01","input":"How many books can I take out at once?","expected":"Twenty items on an adult card.","tags":["borrowing"]}
+{"id":"borrow-02","input":"How long is the loan period?","expected":"Three weeks, renewable twice.","tags":["borrowing"]}
+{"id":"borrow-03","input":"Can I borrow a reference book?","expected":"No, reference stock is consulted in the building.","tags":["borrowing"]}
+{"id":"borrow-04","input":"Do children's cards have a different limit?","expected":"Ten items, and no audiovisual stock.","tags":["borrowing"]}
+{"id":"borrow-05","input":"Can I renew online?","expected":"Yes, unless another reader has placed a hold.","tags":["borrowing"]}
+{"id":"borrow-06","input":"What do I need to open a card?","expected":"Proof of address dated within three months.","tags":["borrowing"]}
+{"id":"holds-01","input":"How do I place a hold on a title that is out?","expected":"From the catalogue, or at any desk.","tags":["holds"]}
+{"id":"holds-02","input":"How long will a hold be kept for me?","expected":"Seven days from the day it arrives.","tags":["holds"]}
+{"id":"holds-03","input":"Can I collect a hold at a different branch?","expected":"Yes, choose the branch when you place it.","tags":["holds"]}
+{"id":"holds-04","input":"How many holds can I have open?","expected":"Eight at a time on an adult card.","tags":["holds"]}
+{"id":"holds-05","input":"Will you tell me when a hold arrives?","expected":"Yes, by email the evening it is shelved.","tags":["holds"]}
+{"id":"holds-06","input":"Can I cancel a hold I no longer want?","expected":"Yes, at any point before you collect it.","tags":["holds"]}
+{"id":"fines-01","input":"What is the fine for a late return?","expected":"Ten pence a day, capped at five pounds.","tags":["fines"]}
+{"id":"fines-02","input":"Do children pay fines?","expected":"No, junior cards accrue no charge.","tags":["fines"]}
+{"id":"fines-03","input":"What happens if I lose a book?","expected":"You pay the replacement cost, not a fine.","tags":["fines"]}
+{"id":"fines-04","input":"Can I still borrow while I owe a fine?","expected":"Not once the balance passes ten pounds.","tags":["fines"]}
+{"id":"fines-05","input":"How do I pay what I owe?","expected":"Online, or at any desk by card.","tags":["fines"]}
+{"id":"fines-06","input":"Is there a grace period on a late return?","expected":"Yes, one day before a charge starts.","tags":["fines"]}

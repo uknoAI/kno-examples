@@ -1,0 +1,23 @@
+{
+  "run_id": "jc-select",
+  "status": "RUN_STATUS_COMPLETED",
+  "source_run_id": "jc-value",
+  "selected": null,
+  "rejected": [
+    {
+      "asset_id": "charges-schedule",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.2418, +0.2418] crosses zero"
+    },
+    {
+      "asset_id": "hours-notice",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.2418, +0.2418] crosses zero"
+    },
+    {
+      "asset_id": "lending-policy",
+      "reason": "no-effect",
+      "detail": "delta +0.0000, CI [-0.2418, +0.2418] crosses zero"
+    }
+  ]
+}

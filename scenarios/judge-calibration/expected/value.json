@@ -1,0 +1,31 @@
+{
+  "run_id": "jc-value",
+  "status": "RUN_STATUS_COMPLETED",
+  "llm_calls": 90,
+  "valuations": [
+    {
+      "asset_id": "charges-schedule",
+      "delta_goal": 0,
+      "low": -0.198,
+      "high": 0.198,
+      "n_pairs": 12,
+      "n_dev": 15
+    },
+    {
+      "asset_id": "hours-notice",
+      "delta_goal": 0,
+      "low": -0.198,
+      "high": 0.198,
+      "n_pairs": 12,
+      "n_dev": 15
+    },
+    {
+      "asset_id": "lending-policy",
+      "delta_goal": 0,
+      "low": -0.198,
+      "high": 0.198,
+      "n_pairs": 12,
+      "n_dev": 15
+    }
+  ]
+}

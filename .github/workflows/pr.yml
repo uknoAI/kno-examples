@@ -74,7 +74,13 @@ jobs:
       - name: Test the verifier itself
         run: |
           set -euo pipefail
-          export KNO_BIN="$(command -v kno)"
+          # Declared and assigned separately (SC2155): `export VAR="$(cmd)"`
+          # takes export's exit status, not the command's, so a `command -v`
+          # that found nothing would sail past `set -e` and the tests would
+          # then skip themselves for want of KNO_BIN — a green job that
+          # checked nothing.
+          KNO_BIN="$(command -v kno)"
+          export KNO_BIN
           go vet ./...
           go test -race -shuffle=on ./...
 

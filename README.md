@@ -74,8 +74,8 @@ field rather than remembered. A reader who pastes stage three into a fresh shell
 store, and a green tick over that failure is exactly the false confidence this repository exists
 to destroy.
 
-Today there are seven, in three groups — a pair contrasting on verdict, a pair contrasting on
-shape, and three written to answer a question a reader actually arrives with.
+Today there are eight, in three groups — a pair contrasting on verdict, a pair contrasting on
+shape, and four written to answer a question a reader actually arrives with.
 [`support-refunds`](scenarios/support-refunds/README.md) has twelve Cases across refunds,
 shipping, account, and billing, and three candidate Assets. All three are rejected. That is the
 interesting part — an empty Portfolio is the tool refusing to recommend something, which is the
@@ -169,16 +169,16 @@ CI.
 This repository was scaffolded with one scenario end-to-end, to prove the machinery before
 committing to it. In order:
 
-- [x] **Migrate the cookbook entries.** All twenty-six migrated entries are here, each with
+- [x] **Migrate the cookbook entries.** All twenty-seven entries are here, each with
       front matter, a tier, and — for the vendor pages — every credential it requires named,
       including the `OPENAI_API_KEY` that `--agent openai:...` implies and that the old pages
-      never mentioned. Two pages stayed behind, for one reason: each documented a command
-      that was on `uknoAI/kno@main` and in no release, so no honest tier could be claimed for it
-      against a binary that cannot run it. `check-your-evals` has since migrated — v0.1.4 ships
-      `kno eval inspect` — leaving `calibrate-a-judge`. v0.1.5 ships `kno judge calibrate` too,
-      so that page's blocker is gone as well and it is now only awaiting the work. It should be
-      an `executed` page: the command defaults to `--replay`, calls no model, and prints a
-      deterministic kappa with a PASS/FAIL gate.
+      never mentioned. Two pages stayed behind for a while, for one reason: each
+      documented a command that was on `uknoAI/kno@main` and in no release, so no honest tier
+      could be claimed for it against a binary that cannot run it. Both blockers expired within a
+      day of each other — v0.1.4 shipped `kno eval inspect`, v0.1.5 shipped
+      `kno judge calibrate` — and both pages migrated as `executed` rather than `manual`, because
+      both commands turn out to be free, offline and deterministic. The RESIDENT list in
+      `uknoAI/kno`'s stub gate is now empty.
 
 - [x] **Tombstone the old paths in `uknoAI/kno`.** Each migrated recipe leaves a one-line stub at
       its old path pointing here. Twenty-two branch-pinned links to
@@ -204,7 +204,7 @@ committing to it. In order:
       `processed`/`issued`, and `cmd/verify/testdata/fixtures/drift-processed` is that exact bug,
       kept as a test.
 
-- [x] **More scenarios.** Seven now. Four in two pairs:
+- [x] **More scenarios.** Eight now. Four in two pairs:
       [`underpowered-eval`](scenarios/underpowered-eval/README.md) contrasts with
       `support-refunds` on *verdict* — the same Cases, three fewer of them, ending in
       `underpowered` rather than `no-effect`: a measurement refused next to a measurement made.
@@ -267,6 +267,23 @@ committing to it. In order:
       honest tier could be claimed for a command no release shipped; v0.1.4 ships it, and the
       page is now [`recipes/check-your-evals.md`](recipes/check-your-evals.md), `executed`
       against `power-analysis`, with a one-line tombstone stub left at its old path.
+
+- [x] **Finish the migration.** v0.1.5 shipped `kno judge calibrate`, the last unreleased command
+      holding a page back, and [`calibrate-a-judge`](recipes/calibrate-a-judge.md) migrated as
+      `executed` against a new [`judge-calibration`](scenarios/judge-calibration/README.md)
+      scenario. All twenty-seven entries are now here and the stub gate's RESIDENT list is empty.
+
+      That scenario is the first to assert a **deliberate non-zero exit**. Two of its stages
+      exist to be refused — one where the interval straddles the floor, one where the floor is
+      above what the labelers themselves agree on — and `run.sh` declares the expected code in an
+      `expect_exit_1=` line and fails the scenario if either stage passes. A gate that quietly
+      stopped refusing would otherwise leave every stage green, every number unchanged, and the
+      page claiming the opposite of what the binary does.
+
+      It is also the first scenario whose committed numbers come from data it does not contain:
+      the calibration set is built into the released binary. Its `set_content_sha256` is
+      projected for that reason — a set whose contents changed under a fixed name and version
+      would move every figure on the page with nothing naming the cause.
 
 ## License
 

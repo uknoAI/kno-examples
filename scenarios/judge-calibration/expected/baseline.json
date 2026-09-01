@@ -1,0 +1,13 @@
+{
+  "run_id": "jc-baseline",
+  "status": "completed",
+  "agent": "fake:",
+  "goal": "exact-match",
+  "dev_cases": 21,
+  "holdout_cases": 3,
+  "scored": 21,
+  "errored": 0,
+  "score": 1,
+  "spent_usd": "$0.00",
+  "llm_calls": 21
+}
