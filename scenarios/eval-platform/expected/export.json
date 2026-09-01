@@ -1,0 +1,8 @@
+{
+  "asset_count": 0,
+  "destination": "context",
+  "path": "context.jsonl",
+  "run_id": "ep-export",
+  "select_run_id": "ep-select",
+  "status": "completed"
+}

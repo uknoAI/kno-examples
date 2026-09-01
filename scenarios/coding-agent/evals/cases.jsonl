@@ -1,0 +1,12 @@
+{"id":"review-01","input":"A pull request adds a new exported function with no doc comment. What does review ask for?","expected":"A doc comment starting with the function name, explaining why the function exists rather than what it does.","tags":["review"]}
+{"id":"review-02","input":"A pull request widens an exported struct field from int32 to int64. What does review ask for?","expected":"A changelog entry and a migration note: widening an exported field is a breaking change for wire consumers.","tags":["review"]}
+{"id":"review-03","input":"A pull request adds a third boolean parameter to an exported constructor. What does review ask for?","expected":"An options struct. Three booleans at a call site cannot be read without opening the definition.","tags":["review"]}
+{"id":"test-01","input":"Where does a new unit test for internal/router go?","expected":"internal/router/router_test.go, in package router, as a table test.","tags":["testing"]}
+{"id":"test-02","input":"A test needs a temporary directory. What does it use?","expected":"t.TempDir(), which is cleaned up automatically and is unique per test.","tags":["testing"]}
+{"id":"test-03","input":"A test asserts on a map's contents and fails intermittently. What is the cause?","expected":"Map iteration order is randomized. Sort the keys before asserting.","tags":["testing"]}
+{"id":"style-01","input":"How are errors wrapped in this codebase?","expected":"fmt.Errorf with %w and a message naming the operation that failed, never the bare error.","tags":["style"]}
+{"id":"style-02","input":"When is a named return value acceptable?","expected":"Only when a deferred function must modify it. Named returns for documentation are rejected.","tags":["style"]}
+{"id":"style-03","input":"What is the import grouping convention?","expected":"Three groups separated by blank lines: standard library, third party, then this module.","tags":["style"]}
+{"id":"tool-01","input":"What runs before a pull request is opened?","expected":"make check, which is gofmt, go vet, the race detector, and the linter.","tags":["tooling"]}
+{"id":"tool-02","input":"How is a dependency added?","expected":"go get, then go mod tidy, then a note in the pull request explaining why the dependency earns its place.","tags":["tooling"]}
+{"id":"tool-03","input":"What generates the protobuf bindings?","expected":"make generate, and the output is committed so a clone builds without protoc.","tags":["tooling"]}

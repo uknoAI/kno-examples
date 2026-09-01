@@ -1,0 +1,10 @@
+{
+  "select": [
+    "Rejected 3",
+    "grading-rubric  no-effect         delta +0.0000, CI [-0.4232, +0.4232] crosses zero"
+  ],
+  "export": [
+    "destination  context",
+    "The artifact is a pure function of the Portfolio and the pool: re-exporting is byte-identical, and export never mutates a destination."
+  ]
+}

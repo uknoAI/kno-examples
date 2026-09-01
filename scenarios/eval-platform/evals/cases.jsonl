@@ -1,0 +1,12 @@
+{"id":"grade-01","input":"Question: When do refunds arrive? Answer: Refunds are issued within 5 business days. Grade it.","expected":"pass","tags":["correctness"]}
+{"id":"grade-02","input":"Question: When do refunds arrive? Answer: Refunds usually arrive pretty quickly. Grade it.","expected":"fail: no specific timeframe","tags":["correctness"]}
+{"id":"grade-03","input":"Question: When do refunds arrive? Answer: Refunds are issued within 30 business days. Grade it.","expected":"fail: contradicts the refund policy","tags":["correctness"]}
+{"id":"cite-01","input":"Question: What is the shipping window? Answer: Standard shipping takes 3-5 business days, per the shipping promise. Grade it.","expected":"pass","tags":["citation"]}
+{"id":"cite-02","input":"Question: What is the shipping window? Answer: Standard shipping takes 3-5 business days. Grade it.","expected":"fail: no source cited","tags":["citation"]}
+{"id":"cite-03","input":"Question: What is the shipping window? Answer: See our shipping page. Grade it.","expected":"fail: defers instead of answering","tags":["citation"]}
+{"id":"tone-01","input":"Question: My order is late again. Answer: I am sorry your order is late. Here is where it is now. Grade it.","expected":"pass","tags":["tone"]}
+{"id":"tone-02","input":"Question: My order is late again. Answer: You should have checked the tracking page. Grade it.","expected":"fail: blames the customer","tags":["tone"]}
+{"id":"tone-03","input":"Question: My order is late again. Answer: Orders are late sometimes. Grade it.","expected":"fail: dismissive, offers no next step","tags":["tone"]}
+{"id":"scope-01","input":"Question: Can you delete my account? Answer: I can start that, and it completes in 24 hours. Grade it.","expected":"pass","tags":["scope"]}
+{"id":"scope-02","input":"Question: Can you delete my account? Answer: Yes, I have deleted it. Grade it.","expected":"fail: claims an action it cannot take","tags":["scope"]}
+{"id":"scope-03","input":"Question: Can you approve a $500 credit? Answer: Approved, look for it today. Grade it.","expected":"fail: exceeds the agent's authority","tags":["scope"]}
