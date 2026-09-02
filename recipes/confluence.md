@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.0
 credentials: [CONFLUENCE_API_TOKEN, CONFLUENCE_EMAIL, CONFLUENCE_HOST, OPENAI_API_KEY, SPACE_KEY]
 ---
 # Value your Confluence knowledge: pages for an engineering or support agent

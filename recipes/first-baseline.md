@@ -3,8 +3,8 @@ verification: executed
 scenario: support-refunds
 stage: baseline
 requires-stages: []
-last-verified: 2026-08-31
-verified-against: kno v0.1.2
+last-verified: 2026-09-02
+verified-against: kno v0.2.0
 ---
 
 # Score your agent for the first time
