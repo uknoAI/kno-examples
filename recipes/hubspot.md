@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.0
 credentials: [HUBSPOT_TOKEN, OPENAI_API_KEY]
 ---
 # Value your HubSpot knowledge: articles and tickets
