@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.0
 credentials: [BRAINTRUST_API_BASE_URL, BRAINTRUST_API_KEY, BRAINTRUST_ORG_NAME, OPENAI_API_KEY]
 ---
 # Measure a Braintrust dataset

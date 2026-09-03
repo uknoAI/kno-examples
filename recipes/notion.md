@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.0
 credentials: [DATABASE_ID, NOTION_TOKEN, OPENAI_API_KEY]
 ---
 # Value your Notion knowledge: pages and databases for an internal-knowledge agent
