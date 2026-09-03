@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.0
 credentials: [LANGFUSE_HOST, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, OPENAI_API_KEY]
 ---
 # Measure a Langfuse dataset
