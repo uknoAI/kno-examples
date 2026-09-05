@@ -1,7 +1,7 @@
 ---
 verification: flags-only
 owner: "@kno-maintainers"
-verified-against: kno v0.1.4
+verified-against: kno v0.2.1
 last-manual-verification: 2026-08-31
 ---
 

@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.1
 credentials: [AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY]
 ---
 # Score your agent against Claude on Bedrock
