@@ -3,8 +3,8 @@ verification: executed
 scenario: power-analysis
 stage: inspect-160
 requires-stages: []
-last-verified: 2026-08-31
-verified-against: kno v0.1.4
+last-verified: 2026-09-05
+verified-against: kno v0.2.1
 ---
 
 # Check whether your evals can attribute anything
