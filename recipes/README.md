@@ -37,7 +37,8 @@ And by role, for the rest:
 [How many Cases do I need?](power-and-sample-size.md) →
 [Value a pool of assets](value-a-pool.md) →
 [Read the results in a notebook](analyze-in-a-notebook.md) →
-[Choose a portfolio under budget](select-a-portfolio.md).
+[Choose a portfolio under budget](select-a-portfolio.md) →
+[Validate a portfolio against the untouched holdout](validate-the-portfolio.md).
 
 **Wiring the pipeline.** [Point Kno at the data you already have](from-your-warehouse.md) →
 [Turn the logs you already have into an eval set](mine-your-transcripts.md) →
@@ -65,6 +66,8 @@ And by role, for the rest:
 | [Export a tuning set](export-a-tuning-set.md) | ✔ `executed` (stage 4) | The destination grammar, the overwrite refusal, and the byte-identical re-export contract |
 | [Read the whole story with `kno report`](read-the-whole-story.md) | ✔ `executed` (stage 5) | One page across the stages — what each section means, what "no cluster data" says, and why the holdout caveat is mandatory |
 | [Delete stored conversation content](retention.md) | ✔ `executed` (stage 6) | What Kno keeps, what `kno purge` removes, and why it keeps the rest |
+| [Validate a portfolio against the untouched holdout](validate-the-portfolio.md) | ✔ `executed` | The stage that opens the holdout — and refuses to, when nothing earned it |
+| [Bridge a tuning set](bridge-a-tuning-set.md) | • `flags-only` | `kno bridge` — the free plan, what arming costs, and the caps that bound it |
 | [Read the results in a notebook](analyze-in-a-notebook.md) | • `flags-only` | `--json` into pandas, a forest plot, and the two things not to recompute |
 | [Point Kno at the data you already have](from-your-warehouse.md) | • `flags-only` | Snowflake, BigQuery, Postgres, dbt and object storage into `cases.jsonl` and a Pool |
 | [Schedule it: Airflow, Dagster, and what to fail the run on](orchestration.md) | • `manual` | Idempotent run ids, resume across retries, where to gate, and where `kno.db` lives |

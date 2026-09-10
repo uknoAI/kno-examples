@@ -332,8 +332,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
+      # No `pull-requests: write` any more: this job commits rather than
+      # proposing, so the narrowest grant that still works is contents alone.
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -352,9 +353,36 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       # The date on a page is evidence of a run, never of a memory. Only CI
       # writes it, and it only writes it after `released` was green.
-      - name: Stamp and open a PR
-        env:
-          GH_TOKEN: ${{ github.token }}
+      #
+      # ── Why this commits to main instead of opening a PR ──────────────────
+      #
+      # It used to open one, and the loop could not close. A pull request
+      # created with GITHUB_TOKEN does not trigger other workflows — GitHub's
+      # guard against a workflow triggering itself forever — so every stamp PR
+      # arrived with "no checks reported" and sat there. Nine accumulated
+      # before anyone noticed, and while they sat, `verified-against:` on
+      # twenty-four pages read a build eight releases old while the nightly
+      # that would have corrected it passed every single night.
+      #
+      # That is worse than it sounds, because the fields have an expiry. A
+      # Tier A page goes stale after 30 days on `last-verified`, so a stuck
+      # stamp does not merely fail to refresh a date — it eventually renders a
+      # staleness banner on a page CI is verifying nightly. The mechanism
+      # would have started lying in the opposite direction from the one it
+      # exists to prevent.
+      #
+      # A review step that no machine can perform and no human does perform is
+      # not a safeguard, it is a queue. The verification these fields report
+      # has already happened: this job `needs: released`, so the scenarios ran
+      # end to end against the released binary and matched their committed
+      # expectations before a single byte was written here.
+      #
+      # What replaces the review is narrower and actually enforced: the diff
+      # must touch nothing but the two machine-owned fields. `verify stamp`
+      # rewrites only `last-verified:` and `verified-against:` lines, so a diff
+      # containing anything else means the stamper changed, and the job stops
+      # rather than pushing to main.
+      - name: Stamp
         run: |
           set -euo pipefail
           go run ./cmd/verify stamp --kno "$(command -v kno)"
@@ -362,10 +390,30 @@ jobs:
             echo "nothing to stamp"
             exit 0
           fi
-          branch="chore/stamp-$(date -u +%F)"
+
+          # Every added and removed line must be one of the two fields. `git
+          # diff -U0` emits only changed lines; the `+++`/`---` file headers
+          # are filtered out by requiring a single leading +/- and no second.
+          offending=$(git diff -U0 -- 'recipes/*.md' \
+            | grep -E '^[+-][^+-]' \
+            | grep -vE '^[+-](last-verified|verified-against):' \
+            || true)
+          if [ -n "$offending" ]; then
+            echo "::error::the stamp diff touches something other than last-verified/verified-against — refusing to push to main"
+            printf '%s\n' "$offending"
+            exit 1
+          fi
+          # Nothing outside recipes/ may move either.
+          if ! git diff --quiet -- ':!recipes/*.md'; then
+            echo "::error::the stamp diff reaches outside recipes/ — refusing to push to main"
+            git diff --stat -- ':!recipes/*.md'
+            exit 1
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
           git commit -sam "chore: stamp last-verified after a green nightly"
-          git push origin "$branch"
-          gh pr create --fill --base main --head "$branch" || true
+          # Rebase rather than merge: main may have moved since checkout, and a
+          # merge commit from a bot is noise in a linear history.
+          git pull --rebase --autostash origin main
+          git push origin HEAD:main

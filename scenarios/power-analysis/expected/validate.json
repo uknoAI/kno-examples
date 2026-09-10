@@ -1,0 +1,14 @@
+{
+  "run_id": "pa-validate",
+  "status": "completed",
+  "select_run_id": "pa-select",
+  "nothing_to_validate": true,
+  "llm_calls": 0,
+  "holdout_case_count": 0,
+  "measured_case_count": 0,
+  "asset_count": 0,
+  "holdout_uses": 0,
+  "min_holdout": 20,
+  "spent_usd": "$0.00",
+  "verdict": "unspecified"
+}

@@ -34,6 +34,11 @@
     "Rejected 3",
     "CI [-0.0440, +0.0440] crosses zero"
   ],
+  "validate": [
+    "Validate run pa-validate",
+    "  The Portfolio selected nothing this stage can measure, so there is nothing to validate.",
+    "  No agent call was made and the holdout was not opened — it stays untouched for the Portfolio that earns it."
+  ],
   "attribute": [
     "routing ran in all-dev mode over 0 clusters",
     "control arm 39 Cases, minimum detectable harm 0.19 (one-sided 95%) — underpowered",

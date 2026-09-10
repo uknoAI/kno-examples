@@ -75,7 +75,7 @@ fi
 printf 'scenario power-analysis: using %s (%s)\n' \
 	"$kno_bin" "$("$kno_bin" --version)" >&2
 
-stages="inspect-12 inspect-40 inspect-160 baseline value select attribute"
+stages="inspect-12 inspect-40 inspect-160 baseline value select validate attribute"
 
 # The stages that read no store an earlier stage wrote. `kno eval inspect`
 # reads an eval FILE: it constructs no agent, opens no database, and depends on
@@ -153,6 +153,12 @@ exit 0
 # default, because the fraction decides which Cases are dev and therefore every
 # number the stage prints. A sweep whose split could move under a changed
 # default is not a sweep.
+#
+# It is pinned on `validate` for a different and stronger reason: that stage's
+# own help says the value "must match the value the pipeline was measured
+# under". A validate run against a different split would be measuring a
+# different holdout from the one the rest of the scenario held back, and would
+# report a number about a population nothing else here describes.
 :
 # >>> inspect-12
 kno eval inspect --evals cases-12.jsonl --holdout-frac 0.2
@@ -178,6 +184,11 @@ kno select --value-run-id pa-value --pool pool.jsonl \
   --max-context-tokens 5000 --max-training-examples 10 --max-cost-usd 1 \
   --db kno.db --run-id pa-select
 # <<< select
+# >>> validate
+kno validate --select-run-id pa-select --evals cases.jsonl --pool pool.jsonl \
+  --agent fake: --goal exact-match --holdout-frac 0.2 --concurrency 1 \
+  --db kno.db --run-id pa-validate --yes
+# <<< validate
 # >>> attribute
 kno eval inspect --evals cases.jsonl --holdout-frac 0.2 \
   --value-run-id pa-value --db kno.db
