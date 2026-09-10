@@ -2,7 +2,7 @@
 verification: flags-only
 owner: "@devarispbrown"
 last-manual-verification: 2026-08-31
-verified-against: kno v0.1.2
+verified-against: kno v0.2.1
 credentials: [GOOGLE_APPLICATION_CREDENTIALS, GOOGLE_CLOUD_REGION]
 ---
 # Score your agent against Claude on Vertex AI
