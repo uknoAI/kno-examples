@@ -24,7 +24,7 @@ scenarios/power-analysis/
   evals/cases.jsonl      160 Cases across 4 behaviors, interleaved
   evals/generate.py      the program that wrote them, committed beside them
   pool/pool.jsonl        3 candidate Assets
-  run.sh                 seven stages: three inspects, then baseline, value, select, attribute
+  run.sh                 eight stages: three inspects, then baseline, value, select, validate, attribute
   expected/              one projected JSON document per stage, plus quotations.json
   DATA-PROVENANCE.md     who wrote this data, and the assertion that it is synthetic
 ```
@@ -100,6 +100,19 @@ which is the whole reason the first three stages exist.
 `select` then widens `±0.0360` to `±0.0440` before deciding. That is the Bonferroni correction
 for having asked about three Assets instead of one, and it is the single most commonly omitted
 step in a hand-rolled ablation. It is visible here as two numbers that differ.
+
+`validate` then opens the holdout — or rather, declines to:
+
+```
+  The Portfolio selected nothing this stage can measure, so there is nothing to validate.
+  No agent call was made and the holdout was not opened — it stays untouched for the Portfolio that earns it.
+```
+
+That is the sealing claim made mechanical. The holdout is a finite resource: every measurement
+against it makes it less untouched. A stage that opened it to discover there was nothing to do
+would spend it for no information, so it does not, and `--json` reports `holdout_uses: 0` — not
+"we declined to report a number", but "the set has been used zero times and is still whole".
+[The recipe](../../recipes/validate-the-portfolio.md) has the rest.
 
 The last stage, `attribute`, is `kno eval inspect` again with `--value-run-id`, which is the only
 way to get the fifth check off `unknown`. It reports what the run's routing *actually* did
