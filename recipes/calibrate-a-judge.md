@@ -3,8 +3,8 @@ verification: executed
 scenario: judge-calibration
 stage: calibrate
 requires-stages: []
-last-verified: 2026-09-01
-verified-against: kno v0.1.5
+last-verified: 2026-09-11
+verified-against: kno v0.2.2
 ---
 
 # Calibrate a judge
