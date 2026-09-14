@@ -3,7 +3,7 @@ verification: executed
 scenario: judge-calibration
 stage: calibrate
 requires-stages: []
-last-verified: 2026-09-13
+last-verified: 2026-09-14
 verified-against: kno v0.2.2
 ---
 
