@@ -3,7 +3,7 @@ verification: executed
 scenario: diy-ablation
 stage: naive
 requires-stages: []
-last-verified: 2026-09-15
+last-verified: 2026-09-16
 verified-against: kno v0.2.2
 ---
 
