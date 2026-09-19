@@ -3,7 +3,7 @@ verification: executed
 scenario: support-refunds
 stage: select
 requires-stages: [baseline, value]
-last-verified: 2026-09-18
+last-verified: 2026-09-19
 verified-against: kno v0.2.2
 ---
 

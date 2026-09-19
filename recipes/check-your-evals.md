@@ -3,7 +3,7 @@ verification: executed
 scenario: power-analysis
 stage: inspect-160
 requires-stages: []
-last-verified: 2026-09-18
+last-verified: 2026-09-19
 verified-against: kno v0.2.2
 ---
 
