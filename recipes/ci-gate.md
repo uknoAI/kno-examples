@@ -3,7 +3,7 @@ verification: executed
 scenario: support-refunds
 stage: baseline
 requires-stages: []
-last-verified: 2026-09-22
+last-verified: 2026-09-23
 verified-against: kno v0.2.2
 ---
 # Gate a deploy on Kno in CI
