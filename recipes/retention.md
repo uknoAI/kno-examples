@@ -3,7 +3,7 @@ verification: executed
 scenario: support-refunds
 stage: purge
 requires-stages: [baseline, value, select, export, report]
-last-verified: 2026-10-11
+last-verified: 2026-10-12
 verified-against: kno v0.2.2
 ---
 # Delete stored conversation content
