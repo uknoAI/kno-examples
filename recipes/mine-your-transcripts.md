@@ -3,7 +3,7 @@ verification: executed
 scenario: transcript-mining
 stage: mine
 requires-stages: []
-last-verified: 2026-10-22
+last-verified: 2026-10-23
 verified-against: kno v0.2.2
 ---
 
