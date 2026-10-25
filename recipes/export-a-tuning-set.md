@@ -3,7 +3,7 @@ verification: executed
 scenario: support-refunds
 stage: export
 requires-stages: [baseline, value, select]
-last-verified: 2026-10-24
+last-verified: 2026-10-25
 verified-against: kno v0.2.2
 ---
 # Export a tuning set
