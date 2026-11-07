@@ -3,7 +3,7 @@ verification: executed
 scenario: power-analysis
 stage: value
 requires-stages: []
-last-verified: 2026-11-06
+last-verified: 2026-11-07
 verified-against: kno v0.2.2
 credentials: [OPENAI_API_KEY]
 ---
