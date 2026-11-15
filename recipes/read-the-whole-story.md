@@ -3,7 +3,7 @@ verification: executed
 scenario: support-refunds
 stage: report
 requires-stages: [baseline, value, select, export]
-last-verified: 2026-11-14
+last-verified: 2026-11-15
 verified-against: kno v0.2.2
 ---
 # Read the whole story with `kno report`
