@@ -3,7 +3,7 @@ verification: executed
 scenario: power-analysis
 stage: validate
 requires-stages: [baseline, value, select]
-last-verified: 2026-11-19
+last-verified: 2026-11-20
 verified-against: kno v0.2.2
 ---
 
